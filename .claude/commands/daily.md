@@ -50,7 +50,7 @@ prompt: |
 prompt: |
 撰写日报内容。
 
-请基于 drafts.yaml 撰写周刊，保存为 `daily/daily-$yesterday.md`。
+请基于 drafts.yaml 撰写日报，保存为 `daily/daily-$yesterday.md`。
 
 ```
 
@@ -67,4 +67,4 @@ prompt: |
 - 再次使用 `Task` 调用 `reviewer` 子任务进行复核。
 - 此过程最多重复 3 次。如果 3 次后仍未通过，请保存当前版本并提示用户人工介入。
 
-请务必一次性完成所有任务，过程中无需向我确认，向我呈现最终的周刊内容。
+请务必一次性完成所有任务，过程中无需向我确认，向我呈现最终的日报内容。

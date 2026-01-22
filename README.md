@@ -4,33 +4,34 @@ Hacker News daily digest fetcher with crawl4ai. Fetches top stories from yesterd
 
 ## Features
 
-- Fetches top 15 stories from Hacker News (yesterday) via Algolia API
+- Fetches top stories from Hacker News (yesterday) via Algolia API (default 10, configurable)
 - Crawls story content and comments using crawl4ai
-- Saves everything to markdown files in the `drafts/` folder
+- Saves story markdown files to `drafts/` (configurable via `--output`)
+- Daily digest posts are stored in `daily/` as `daily-YYYY-MM-DD.md` for the Hugo site
 - Rich CLI output with progress tracking
 
 ## Installation
 
 ```bash
 pip install -r requirements.txt
-playwright install chromium
+python -m playwright install chromium
 ```
 
 ## Usage
 
 ```bash
-# Run with defaults (yesterday's top 15 stories)
+# Run with defaults (yesterday's top 10 stories)
 python -m hn_daily
 
 # With options
-python -m hn_daily --date 2025-01-19 --limit 10 --output my_drafts
+python -m hn_daily --date 2025-01-19 --limit 15 --output my_drafts
 ```
 
 ## Output
 
 Markdown files are saved to `drafts/` with format:
 ```
-{story_title}_{timestamp}.md
+{story_title}_{YYYYMMDD}.md
 ```
 
 Each file contains:
@@ -59,4 +60,4 @@ hn-daily/
 ## Requirements
 
 - Python 3.10+
-- Playwright browsers (`playwright install chromium`)
+- Playwright browsers (`python -m playwright install chromium`)
