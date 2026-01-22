@@ -1,0 +1,26 @@
+[project]
+name = "hn-daily"
+version = "0.1.0"
+description = "Hacker News daily digest fetcher with crawl4ai"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies-file = "requirements.txt"
+
+[project.scripts]
+hn-daily = "hn_daily.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-mock>=3.12.0",
+    "respx>=0.21.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

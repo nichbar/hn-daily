@@ -1,0 +1,6 @@
+"""Entry point for hn-daily."""
+
+from hn_daily.cli import main
+
+if __name__ == "__main__":
+    main()

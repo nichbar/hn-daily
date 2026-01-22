@@ -1,0 +1,39 @@
+baseURL = "https://hn.hellmo.de/"
+languageCode = "zh-cn"
+title = "Hacker News 日报"
+theme = "hugo-theme-terminal"
+[pagination]
+  pagerSize = 10
+
+enableRobotsTXT = true
+
+[module]
+  [[module.mounts]]
+    source = "../daily"
+    target = "content/posts"
+
+[params]
+  contentTypeName = "posts"
+  showMenuItems = 2
+  showLanguageSelector = false
+  themeColor = "Pistachio"
+  centerTheme = true
+  fullWidthTheme = false
+  subtitle = "A simple, retro theme for Hugo"
+  owner = "Everyone"
+  copyright = "No Copyright"
+  menuMore = "显示更多"
+  readMore = "查看更多"
+  readOtherPosts = "查看其他"
+  newerPosts = "下一篇"
+  olderPosts = "上一篇"
+  missingContentMessage = "页面找不到..."
+  missingBackButtonLabel = "回到首页"
+  minuteReadingTime = "分钟阅读"
+  words = "words"
+
+[languages]
+  [languages.zh]
+    languageName = "中文"
+    title = "Hacker News 日报"
+    weight = 1
