@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(pip install:*)",
+      "Bash(date:*)",
+      "Bash(python:*)",
+      "Bash(pip show:*)",
+      "Bash(playwright install:*)",
+      "Skill(kiro-skill:kiro:design)",
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(cat:*)",
+      "Bash(python3 -m hn_daily:*)",
+      "Skill(daily)",
+      "Skill(chinese-writing)",
+      "Bash(ls:*)",
+      "Bash(git submodule add:*)",
+      "Bash(ln:*)",
+      "Bash(chmod:*)",
+      "Bash(hugo version:*)",
+      "Bash(./scripts/build.sh:*)",
+      "Bash(hugo server:*)",
+      "Bash(test:*)",
+      "Bash(*)",
+      "Edit",
+      "Read",
+      "Write"
+    ]
+  }
+}
