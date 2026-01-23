@@ -35,7 +35,7 @@ jobs:
           ANTHROPIC_DEFAULT_HAIKU_MODEL: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
           ANTHROPIC_DEFAULT_OPUS_MODEL: ${{ secrets.ANTHROPIC_DEFAULT_OPUS_MODEL }}
           ANTHROPIC_DEFAULT_SONNET_MODEL: ${{ secrets.ANTHROPIC_DEFAULT_SONNET_MODEL }}
-        run: claude -y /daily
+        run: claude -p "/daily"
 
       - name: Commit and push changes
         run: |
