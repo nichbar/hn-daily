@@ -14,7 +14,8 @@ from .services import (
     StoryService,
     CommentService,
     CrawlerService,
-    StorageService
+    StorageService,
+    HistoryService
 )
 
 
@@ -54,6 +55,7 @@ async def run_daily_digest(
     comment_service = CommentService()
     crawler_service = CrawlerService()
     storage_service = StorageService(output_dir)
+    history_service = HistoryService()
 
     try:
         with Progress(
@@ -65,15 +67,21 @@ async def run_daily_digest(
         ) as progress:
             # Fetch stories
             task = progress.add_task("Fetching stories from Hacker News...")
-            stories = await story_service.get_top_stories_from_yesterday(limit, target_date)
-            progress.update(task, completed=100, description=f"Found {len(stories)} stories")
+            all_stories = await story_service.get_top_stories_from_yesterday(limit, target_date)
+
+            # Deduplicate stories
+            stories = [s for s in all_stories if not history_service.is_seen(s.url)]
+            skipped_count = len(all_stories) - len(stories)
+
+            progress.update(task, completed=100, description=f"Found {len(all_stories)} stories ({skipped_count} skipped)")
 
             if not stories:
-                console.print("[yellow]No stories found for the specified date.[/yellow]")
+                console.print("[yellow]No new stories found for the specified date.[/yellow]")
                 return
 
             # Process each story
             results = []
+            successfully_processed_urls = []
             for i, story in enumerate(stories, 1):
                 progress.console.print(f"\n[cyan]Processing {i}/{len(stories)}: {story.title[:50]}...[/cyan]")
 
@@ -93,6 +101,7 @@ async def run_daily_digest(
                     filepath = storage_service.save_content(story, crawl_result, comments)
                     if filepath:
                         results.append((story, filepath, crawl_result.success))
+                        successfully_processed_urls.append(story.url)
                         progress.update(task, completed=100, description=f"Saved: {filepath.name}")
                     else:
                         results.append((story, None, False))
@@ -103,6 +112,10 @@ async def run_daily_digest(
 
         # Print summary
         _print_summary(results)
+
+        # Save history
+        if successfully_processed_urls:
+            history_service.save_history(successfully_processed_urls)
 
     finally:
         await story_service.close()

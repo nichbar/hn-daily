@@ -4,6 +4,7 @@ from .story_service import StoryService, ApiError
 from .comment_service import CommentService
 from .crawler_service import CrawlerService, CrawlError
 from .storage_service import StorageService
+from .history_service import HistoryService
 
 __all__ = [
     "StoryService",
@@ -12,4 +13,5 @@ __all__ = [
     "CrawlerService",
     "CrawlError",
     "StorageService",
+    "HistoryService",
 ]
