@@ -15,7 +15,7 @@ model: opus
 # 工作流程
 
 1. **读取草稿**：遍历 `drafts` 目录，每份草稿由三部分内容构成，头部，原文内容（Crawled Content）以及评论 (Comments)。
-2. **整理提炼**：对每篇草稿的原文内容进行整理提炼并翻译成中文，从评论区域（Comments）提取评论内容，用于填充到 YAML 的 comments 字段
+2. **整理提炼**：对每篇草稿的原文内容进行整理提炼（内容尽量丰富）并翻译成中文，从评论区域（Comments）提取评论内容，用于填充到 YAML 的 comments 字段
 3. **分类 (Categorization)**：
    - 将文章分为两类：`news` (资讯), `blog` (博客)。
 4. **生成 YAML**：

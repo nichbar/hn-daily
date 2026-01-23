@@ -48,7 +48,11 @@ model: opus
   - 锚文本应贴近标题或核心名词，如产品名、公司名、项目名。
   - **禁止**单独列出"原文链接"或"阅读更多"等独立行。
   - 示例：`[Claude 4](https://example.com) 在推理能力上有显著提升...`
-- **Front matter** `title` 格式: "Hacker News 日报 (YYYY-MM-DD)"。
+- **Front matter 约束**：
+    - title: 文章标题，格式为 "Hacker News 日报 (YYYY-MM-DD)"。
+    - date: 发布日期，格式为 YYYY-MM-DD。
+    - summary: 文章的精华提炼。
+    - tags: 固定标签数组。
 
 # 工作流程
 
