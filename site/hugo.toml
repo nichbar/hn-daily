@@ -24,7 +24,7 @@ enableRobotsTXT = true
   copyright = "No Copyright"
   menuMore = "显示更多"
   readMore = "查看更多"
-  readOtherPosts = "查看其他"
+  readOtherPosts = "阅读更多文章"
   newerPosts = "下一篇"
   olderPosts = "上一篇"
   missingContentMessage = "页面找不到..."
@@ -37,3 +37,7 @@ enableRobotsTXT = true
     languageName = "中文"
     title = "Hacker News 日报"
     weight = 1
+
+    [languages.en.params.logo]
+      logoText = "Hacker News 日报"
+      logoHomeLink = "/"
