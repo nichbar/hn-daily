@@ -52,7 +52,7 @@ model: opus
     - title: 文章标题，格式为 "Hacker News 日报 (YYYY-MM-DD)"。
     - date: 发布日期，格式为 YYYY-MM-DD。
     - summary: 文章的精华提炼。
-    - tags: 固定标签数组，中文，从内容里提取关键字，（过滤 `Hacker News`）。
+    - tags: 固定标签数组，从内容里提取关键字 (公司名优先，过滤 `Hacker News`）。
 
 # 工作流程
 
