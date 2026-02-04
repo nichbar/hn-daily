@@ -37,3 +37,4 @@ class CrawlResult:
     markdown_content: str
     success: bool
     error_message: Optional[str] = None
+    is_fallback: bool = False

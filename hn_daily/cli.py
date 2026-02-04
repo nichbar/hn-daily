@@ -93,14 +93,24 @@ async def run_daily_digest(
                 # Crawl content
                 task = progress.add_task(f"Crawling content...")
                 crawl_result = await crawler_service.crawl_story(story)
-                progress.update(task, completed=100, description="Crawl complete" if crawl_result.success else "Crawl failed")
+                progress.update(
+                    task,
+                    completed=100,
+                    description=(
+                        "Crawl complete (fallback)"
+                        if crawl_result.is_fallback
+                        else "Crawl complete"
+                        if crawl_result.success
+                        else "Crawl failed"
+                    )
+                )
 
                 # Save to file
                 task = progress.add_task(f"Saving to markdown...")
                 try:
                     filepath = storage_service.save_content(story, crawl_result, comments)
                     if filepath:
-                        results.append((story, filepath, crawl_result.success))
+                        results.append((story, filepath, crawl_result.success or crawl_result.is_fallback))
                         successfully_processed_urls.append(story.url)
                         progress.update(task, completed=100, description=f"Saved: {filepath.name}")
                     else:

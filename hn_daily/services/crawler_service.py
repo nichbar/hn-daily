@@ -3,7 +3,9 @@
 import asyncio
 import re
 from typing import Optional
-from datetime import datetime
+from html import unescape
+
+import httpx
 
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
 
@@ -36,6 +38,18 @@ def clean_markdown_content(markdown: str) -> str:
         cleaned.append(line)
 
     return '\n'.join(cleaned)
+
+
+def html_to_markdown(html: str) -> str:
+    """Convert HTML to markdown (lightweight)."""
+    text = unescape(html)
+    text = re.sub(r"(?is)<(script|style).*?>.*?</\1>", "", text)
+    text = re.sub(r"(?is)<!--.*?-->", "", text)
+    text = re.sub(r"(?is)<br\s*/?>", "\n", text)
+    text = re.sub(r"(?is)</(p|div|section|article|li|h[1-6])>", "\n", text)
+    text = re.sub(r"(?is)<[^>]+>", "", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
 
 
 class CrawlError(Exception):
@@ -78,20 +92,30 @@ class CrawlerService:
         delay = self.initial_delay
 
         for attempt in range(self.max_retries):
-            try:
-                return await self._do_crawl(url, title)
-            except Exception as e:
-                last_error = e
-                if attempt < self.max_retries - 1:
-                    await asyncio.sleep(delay)
-                    delay *= 2  # Exponential backoff
+            result = await self._do_crawl(url, title)
+            if result.success:
+                return result
+
+            last_error = Exception(result.error_message or "Unknown crawl error")
+            if attempt < self.max_retries - 1:
+                await asyncio.sleep(delay)
+                delay *= 2  # Exponential backoff
+
+        fallback_result = await self._fallback_fetch(url, title)
+        if fallback_result.success:
+            return fallback_result
+
+        fallback_error = fallback_result.error_message or "Fallback fetch failed"
 
         return CrawlResult(
             url=url,
             title=title,
             markdown_content="",
             success=False,
-            error_message=f"Crawling failed after {self.max_retries} attempts: {str(last_error)}"
+            error_message=(
+                f"Crawling failed after {self.max_retries} attempts: {str(last_error)}; "
+                f"{fallback_error}"
+            )
         )
 
     async def _do_crawl(self, url: str, title: str) -> CrawlResult:
@@ -122,6 +146,14 @@ class CrawlerService:
                 first_line = result.markdown.strip().split('\n')[0] if result.markdown else ""
                 extracted_title = first_line[:100] if len(first_line) > 3 else title
                 cleaned_content = clean_markdown_content(result.markdown) if result.markdown else ""
+                if len(cleaned_content) < 100:
+                    return CrawlResult(
+                        url=url,
+                        title=title,
+                        markdown_content="",
+                        success=False,
+                        error_message="Crawl returned insufficient content"
+                    )
                 return CrawlResult(
                     url=url,
                     title=title or extracted_title,
@@ -136,3 +168,40 @@ class CrawlerService:
                     success=False,
                     error_message=result.error_message or "Unknown crawl error"
                 )
+
+    async def _fallback_fetch(self, url: str, title: str) -> CrawlResult:
+        """Fetch content with httpx when crawl4ai fails."""
+        try:
+            headers = {
+                "User-Agent": "hn-daily/1.0",
+                "Accept": "text/html,application/xhtml+xml"
+            }
+            async with httpx.AsyncClient(headers=headers, follow_redirects=True, timeout=20.0) as client:
+                response = await client.get(url)
+                response.raise_for_status()
+                markdown = html_to_markdown(response.text)
+                cleaned_content = clean_markdown_content(markdown) if markdown else ""
+                if not cleaned_content:
+                    return CrawlResult(
+                        url=url,
+                        title=title,
+                        markdown_content="",
+                        success=False,
+                        error_message="Fallback fetch returned empty content"
+                    )
+                return CrawlResult(
+                    url=url,
+                    title=title,
+                    markdown_content=cleaned_content,
+                    success=True,
+                    is_fallback=True
+                )
+        except Exception as e:
+            return CrawlResult(
+                url=url,
+                title=title,
+                markdown_content="",
+                success=False,
+                error_message=f"Fallback fetch failed: {e}"
+            )
+

@@ -39,8 +39,8 @@ class StorageService:
         Returns:
             Path to the saved file, or None if crawl failed
         """
-        # Don't create markdown file if crawling failed
-        if not crawl_result.success:
+        # Don't create markdown file if crawling failed and no fallback content
+        if not crawl_result.success and not crawl_result.is_fallback:
             return None
 
         output_dir = Path(custom_output_dir) if custom_output_dir else self.output_dir
@@ -89,8 +89,11 @@ class StorageService:
             "",
         ]
 
-        if crawl_result.success:
+        if crawl_result.success or crawl_result.is_fallback:
             lines.append(crawl_result.markdown_content)
+            if crawl_result.is_fallback:
+                lines.append("")
+                lines.append("*Content fetched via fallback HTTP GET.*")
         else:
             lines.append(f"*Crawl failed: {crawl_result.error_message}*")
 
