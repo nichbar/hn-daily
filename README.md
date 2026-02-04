@@ -7,7 +7,7 @@ Hacker News daily digest fetcher with crawl4ai. Fetches top stories from yesterd
 - Fetches top stories from Hacker News (yesterday) via Algolia API (default 10, configurable)
 - Crawls story content and comments using crawl4ai
 - Saves story markdown files to `drafts/` (configurable via `--output`)
-- Daily digest posts are stored in `daily/` as `daily-YYYY-MM-DD.md` for the Hugo site
+- Daily digest posts are stored in `daily/` as `daily/YYYY/MM/YYYY-MM-DD.md` for the Hugo site
 - Rich CLI output with progress tracking
 
 ## Installation

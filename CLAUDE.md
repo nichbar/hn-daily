@@ -32,7 +32,7 @@ python -m pytest tests/ -v
 - crawl4ai requires Playwright browsers to be installed
 - Failed crawls don't abort the batch - each story is processed independently
 - Output files use `YYYYMMDD` in filename to avoid collisions
-- `daily/` stores the final daily digest posts as `daily-YYYY-MM-DD.md` for the Hugo site
+- `daily/` stores the final daily digest posts as `daily/YYYY/MM/YYYY-MM-DD.md` for the Hugo site
 
 ## Testing
 

@@ -10,7 +10,7 @@ model: opus
 
 - **目标**：根据 `drafts.yaml` 撰写最终的 Markdown 格式日报文件。
 - **输入**：`drafts/drafts.yaml`（如有需要可回溯 `drafts` 目录原文）。
-- **输出**：在 `/daily` 目录输出命名格式为 `YYYY-MM-DD.md` 的最终日报文件。
+- **输出**：在 `/daily/YYYY/MM/` 目录输出命名格式为 `YYYY-MM-DD.md` 的最终日报文件。
 
 # 技能与风格
 
@@ -62,4 +62,4 @@ model: opus
    - 参考 `chinese-writing` 技能中的写作建议。
    - 将文件中的结构化数据转化为连贯的段落。
    - 保持原文链接。
-4. **生成文件**：将最终内容输出到 `/daily` 目录命名格式为 `YYYY-MM-DD.md` 。
+4. **生成文件**：将最终内容输出到 `/daily/YYYY/MM/` 目录命名格式为 `YYYY-MM-DD.md`（如目录不存在请创建）。

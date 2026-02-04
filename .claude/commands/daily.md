@@ -12,11 +12,11 @@ description: 创建日报
 
 每个阶段开始前，检查**产物是否存在**来判断恢复点：
 
-| 阶段    | 完成标志                               | 恢复动作                     |
-| ------- | -------------------------------------- | ---------------------------- |
-| Phase 1 | `drafts/` 目录存在且有 `.md` 文件      | 跳过 Phase 1，进入 Phase 2   |
-| Phase 2 | `drafts.yaml`文件存在                  | 跳过 Phase 1-2，进入 Phase 3 |
-| Phase 3 | `daily/daily-{YYYY-MM-DD}.md` 文件存在 | 跳过 Phase 1-3，进入 Phase 4 |
+| 阶段    | 完成标志                                      | 恢复动作                     |
+| ------- | --------------------------------------------- | ---------------------------- |
+| Phase 1 | `drafts/` 目录存在且有 `.md` 文件             | 跳过 Phase 1，进入 Phase 2   |
+| Phase 2 | `drafts.yaml`文件存在                         | 跳过 Phase 1-2，进入 Phase 3 |
+| Phase 3 | `daily/{YYYY}/{MM}/{YYYY-MM-DD}.md` 文件存在 | 跳过 Phase 1-3，进入 Phase 4 |
 
 ## 工作流程
 
@@ -50,11 +50,11 @@ prompt: |
 prompt: |
 撰写日报内容。
 
-请基于 drafts.yaml 撰写日报，保存为 `daily/daily-$yesterday.md`。
+请基于 drafts.yaml 撰写日报，将 $yesterday 拆分为 $year 和 $month，并保存为 `daily/$year/$month/$yesterday.md`（如目录不存在请创建）。
 
 ```
 
-**产出**：最终的 Markdown 日报文件 daily-$yesterday.md
+**产出**：最终的 Markdown 日报文件 daily/$year/$month/$yesterday.md
 
 ### 4. 审核与修订 (Phase 4)
 
