@@ -7,7 +7,7 @@ description: 调用爬虫脚本
 
 ## 流程
 
-调用 `date -v-1d "+%Y-%m-%d"` 获取时间字符串并替换下述占位符 $yesterday ，爬取 15 篇 story
+调用 `date -d "yesterday" +%Y-%m-%d"` 获取时间字符串并替换下述占位符 $yesterday ，爬取 15 篇 story
 
 `python -m hn_daily --date $yesterday --limit 15`
 

@@ -6,7 +6,7 @@ description: 创建日报
 
 ## 时间
 
-使用 `date -v-1d "+%Y-%m-%d"'` 获取昨天的日期字符串，日期字符串命名位 $yesterday
+使用 `date -d "yesterday" +%Y-%m-%d'` 获取昨天的日期字符串，日期字符串命名位 $yesterday
 
 ## 进度管理（产物即状态）
 
