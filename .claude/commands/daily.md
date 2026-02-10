@@ -39,19 +39,17 @@ prompt: |
 请对内容进行筛选、翻译，生成 /drafts/drafts.yaml。
 ```
 
-**产出**: `drafts.yaml` 整理后的高质量内容列表
+**产出**: `drafts/drafts.yaml` ，整理后的高质量内容列表
 
 ### 3. 撰写内容 (Phase 3)
 
 使用 `Task` 工具调用 `writer` 子任务：
 
 ```
-
 prompt: |
 撰写日报内容。
 
 请基于 drafts.yaml 撰写日报，将 $yesterday 拆分为 $year 和 $month，并保存为 `daily/$year/$month/$yesterday.md`（如目录不存在请创建）。
-
 ```
 
 **产出**：最终的 Markdown 日报文件 daily/$year/$month/$yesterday.md
