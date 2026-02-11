@@ -20,7 +20,7 @@ python -m playwright install chromium
 ## Usage
 
 ```bash
-# Run with defaults (yesterday's top 10 stories)
+# Run with defaults (yesterday's top 15 stories)
 python -m hn_daily
 
 # With options

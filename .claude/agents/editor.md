@@ -19,13 +19,9 @@ date: "YYYY-MM-DD"
 stories:
   - title: "原文标题"
     url: "https://example.com/article"
-    hn_url: "https://news.ycombinator.com/item?id=..."
-    summary: "中文摘要，100-200字..."
-    highlights:
-      - "要点1"
-      - "要点2"
-      - "要点3"
-    category: "分类名称"
+    summary: "中文摘要，200~300字..."
+    category: 分类，主要分类为资讯 (news) 和播客 (blog)，可适当细分
+    comments: "中文精选评论，包含 hacker news 的讨论链接，100~200字... "
 ```
 
 # 工作流程
@@ -42,6 +38,5 @@ stories:
 
 # 质量检查
 
-- 确保每个故事条目包含完整字段：title, url, hn_url, summary, highlights, category
-- highlights 应为数组格式，至少 3 条
+- 确保每个故事条目包含完整字段：title, url, hn_url, summary, category, comments
 - 字符串值如包含冒号、特殊字符需正确引用
