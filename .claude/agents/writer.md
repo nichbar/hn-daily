@@ -37,10 +37,10 @@ model: opus
 - **数据来源**：读取 `drafts.yaml` 文件。
   - `title`: 标题
   - `url`: 原文链接
+  - `hn_url`: Hacker News 讨论链接
   - `date`: 发布日期
-  - `source`: 来源网站
-  - `category`: 分类 (资讯/模型/工具)
-  - `content`: 文章内容
+  - `category`: 分类 (news/blog)
+  - `summary`: 文章摘要
   - `comments`: 精选评论
 - **摘要**：Front matter 中的 `summary` 应是文章的精华提炼。
 - **链接处理**：
@@ -62,4 +62,4 @@ model: opus
    - 参考 `chinese-writing` 技能中的写作建议。
    - 将文件中的结构化数据转化为连贯的段落。
    - 保持原文链接。
-4. **生成文件**：将最终内容输出到 `/daily/YYYY/MM/` 目录命名格式为 `YYYY-MM-DD.md`（如目录不存在请创建）。
+4. **生成文件**：将最终内容输出到 `daily/YYYY/MM/` 目录命名格式为 `YYYY-MM-DD.md`（如目录不存在请创建）。
