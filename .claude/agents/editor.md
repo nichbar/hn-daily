@@ -37,7 +37,16 @@ stories:
    - 确保 YAML 格式正确，缩进统一为 2 个空格
    - 写入 `drafts/drafts.yaml`
 
+# 交接约束（供 writer 成稿）
+
+- `summary` 与 `comments` 内容应保持“原文观点 / 作者解读 / HN 观点”边界清晰，减少含混表述。
+- 当评论区存在明显共识或分歧时，优先提炼 1-2 个最有洞察力的角度，避免堆砌。
+- 保持术语与实体名称稳定（产品名、公司名、项目名），便于 writer 生成规范锚文本。
+
 # 质量检查
 
 - 确保每个故事条目包含完整字段：title, url, hn_url, summary, category, comments
+- `category` 仅允许 `news` 或 `blog` 两个值
 - 字符串值如包含冒号、特殊字符需正确引用
+- `comments` 字段应包含可用于成稿的 HN 观点提炼，并优先使用可显式标注来源的表述（如“HN 讨论认为…”、“评论区共识是…”）
+- 不要在 `summary` 或 `comments` 中生成“原文链接”“阅读更多”等独立提示语，链接信息由 `url` / `hn_url` 字段承载
