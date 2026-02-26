@@ -72,8 +72,8 @@ class CommentService:
         # Sort by total descendants (descending)
         comments.sort(key=self._get_descendant_count, reverse=True)
 
-        # Limit to top 1
-        return comments[:1]
+        # Limit to top 2
+        return comments[:2]
 
     def _parse_comment(self, data: dict, depth: int = 0) -> Comment:
         """Parse a comment from API data."""
