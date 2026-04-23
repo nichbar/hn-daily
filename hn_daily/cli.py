@@ -4,7 +4,6 @@ import argparse
 import asyncio
 import sys
 from datetime import datetime
-from pathlib import Path
 
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
@@ -70,7 +69,13 @@ async def run_daily_digest(
             all_stories = await story_service.get_top_stories_from_yesterday(limit, target_date)
 
             # Deduplicate stories
-            stories = [s for s in all_stories if not history_service.is_seen(s.url)]
+            stories = [
+                story
+                for story in all_stories
+                if not history_service.is_seen(
+                    history_service.build_story_key(story.url, story.story_id)
+                )
+            ]
             skipped_count = len(all_stories) - len(stories)
 
             progress.update(task, completed=100, description=f"Found {len(all_stories)} stories ({skipped_count} skipped)")
@@ -81,7 +86,7 @@ async def run_daily_digest(
 
             # Process each story
             results = []
-            successfully_processed_urls = []
+            successfully_processed_keys = []
             for i, story in enumerate(stories, 1):
                 progress.console.print(f"\n[cyan]Processing {i}/{len(stories)}: {story.title[:50]}...[/cyan]")
 
@@ -111,7 +116,9 @@ async def run_daily_digest(
                     filepath = storage_service.save_content(story, crawl_result, comments)
                     if filepath:
                         results.append((story, filepath, crawl_result.success or crawl_result.is_fallback))
-                        successfully_processed_urls.append(story.url)
+                        successfully_processed_keys.append(
+                            history_service.build_story_key(story.url, story.story_id)
+                        )
                         progress.update(task, completed=100, description=f"Saved: {filepath.name}")
                     else:
                         results.append((story, None, False))
@@ -124,8 +131,8 @@ async def run_daily_digest(
         _print_summary(results)
 
         # Save history
-        if successfully_processed_urls:
-            history_service.save_history(successfully_processed_urls)
+        if successfully_processed_keys:
+            history_service.save_history(successfully_processed_keys)
 
     finally:
         await story_service.close()

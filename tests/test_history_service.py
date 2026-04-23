@@ -1,6 +1,4 @@
 import json
-from pathlib import Path
-import pytest
 from hn_daily.services.history_service import HistoryService
 
 def test_history_service_init_empty(tmp_path):
@@ -54,3 +52,22 @@ def test_history_service_corrupt_file(tmp_path):
 
     service = HistoryService(str(history_file))
     assert len(service.seen_urls) == 0
+
+def test_history_service_ignores_non_string_entries(tmp_path):
+    """Test loading history with invalid entries from older files."""
+    history_file = tmp_path / "history.json"
+    with open(history_file, "w", encoding="utf-8") as f:
+        json.dump(["https://valid.com", None, 123, ""], f)
+
+    service = HistoryService(str(history_file))
+
+    assert service.is_seen("https://valid.com") is True
+    assert len(service.seen_urls) == 1
+
+def test_build_story_key_for_hn_self_post(tmp_path):
+    """Stories without URLs should use a stable item key."""
+    history_file = tmp_path / "history.json"
+    service = HistoryService(str(history_file))
+
+    assert service.build_story_key(None, 12345) == "hn://item/12345"
+    assert service.build_story_key("https://example.com", 12345) == "https://example.com"

@@ -1,8 +1,8 @@
-"""Crawler service using crawl4ai for content extraction."""
+"""Crawler service using Jina Reader and crawl4ai for content extraction."""
 
 import asyncio
+import os
 import re
-from typing import Optional
 from html import unescape
 
 import httpx
@@ -13,31 +13,36 @@ from ..models import Story, CrawlResult
 
 
 def clean_markdown_content(markdown: str) -> str:
-    """Remove navigation elements and clean up markdown."""
-    lines = markdown.split('\n')
+    """Normalize markdown while preserving article structure."""
+    lines = markdown.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     cleaned = []
+    previous_blank = False
 
     for line in lines:
+        stripped = line.strip()
+
         # Skip skip-to links
-        if re.search(r'\[ Skip to .*?\]\(https?://', line):
-            continue
-        # Skip navigation list items
-        if re.match(r'^\s*\*\s*\[', line):
+        if re.search(r'\[\s*skip to .*?\]\(https?://', stripped, re.IGNORECASE):
             continue
         # Skip site logo lines
-        if re.match(r'^\s*\[ !\[.*?\]\(.*?\)\s*\]\(.*?\)', line):
+        if re.match(r'^\[\s*!\[.*?\]\(.*?\)\s*\]\(.*?\)\s*$', stripped):
             continue
         # Skip standalone site name lines (often repeated in headers/footers)
-        if re.match(r'^Kiel Institute\s*$', line.strip()):
+        if re.match(r'^Kiel Institute\s*$', stripped):
             continue
-        if re.match(r'^Search\s*$', line.strip()):
+        if re.match(r'^Search\s*$', stripped):
             continue
-        # Skip empty lines
-        if not line.strip():
-            continue
-        cleaned.append(line)
 
-    return '\n'.join(cleaned)
+        if not stripped:
+            if not previous_blank:
+                cleaned.append("")
+            previous_blank = True
+            continue
+
+        cleaned.append(line.rstrip())
+        previous_blank = False
+
+    return '\n'.join(cleaned).strip()
 
 
 def html_to_markdown(html: str) -> str:
@@ -60,14 +65,34 @@ class CrawlError(Exception):
 class CrawlerService:
     """Crawls story content using crawl4ai."""
 
-    def __init__(self, max_retries: int = 3, initial_delay: float = 1.0):
+    JINA_READER_BASE_URL = "https://r.jina.ai/"
+
+    def __init__(
+        self,
+        max_retries: int = 3,
+        initial_delay: float = 1.0,
+        use_jina_reader: bool = True,
+        jina_timeout: float = 20.0,
+        jina_api_key: str | None = None,
+    ):
         self.max_retries = max_retries
         self.initial_delay = initial_delay
+        self.use_jina_reader = use_jina_reader
+        self.jina_timeout = jina_timeout
+        self.jina_api_key = (
+            jina_api_key
+            or os.getenv("JINA_READER_API_KEY")
+            or os.getenv("JINA_API_KEY")
+        )
 
     def _is_hn_url(self, url: str) -> bool:
         """Check if URL is from Hacker News."""
         return url.startswith("https://news.ycombinator.com/") or \
                url.startswith("http://news.ycombinator.com/")
+
+    def _should_use_jina_reader(self, url: str) -> bool:
+        """Use Jina Reader for external article URLs."""
+        return self.use_jina_reader and not self._is_hn_url(url)
 
     async def crawl_story(self, story: Story) -> CrawlResult:
         """
@@ -91,8 +116,24 @@ class CrawlerService:
         last_error = None
         delay = self.initial_delay
 
+        if self._should_use_jina_reader(url):
+            reader_result = await self._fetch_with_jina_reader(url, title)
+            if reader_result.success:
+                return reader_result
+            last_error = Exception(reader_result.error_message or "Jina Reader fetch failed")
+
         for attempt in range(self.max_retries):
-            result = await self._do_crawl(url, title)
+            try:
+                result = await self._do_crawl(url, title)
+            except Exception as exc:
+                result = CrawlResult(
+                    url=url,
+                    title=title,
+                    markdown_content="",
+                    success=False,
+                    error_message=f"Crawl raised exception: {exc}",
+                )
+
             if result.success:
                 return result
 
@@ -117,6 +158,53 @@ class CrawlerService:
                 f"{fallback_error}"
             )
         )
+
+    async def _fetch_with_jina_reader(self, url: str, title: str) -> CrawlResult:
+        """Fetch article markdown via Jina Reader."""
+        headers = {
+            "User-Agent": "hn-daily/1.0",
+            "Accept": "text/plain",
+            "X-Timeout": str(int(self.jina_timeout)),
+        }
+
+        if self.jina_api_key:
+            headers["Authorization"] = f"Bearer {self.jina_api_key}"
+
+        reader_url = f"{self.JINA_READER_BASE_URL}{url}"
+
+        try:
+            async with httpx.AsyncClient(
+                headers=headers,
+                follow_redirects=True,
+                timeout=self.jina_timeout,
+            ) as client:
+                response = await client.get(reader_url)
+                response.raise_for_status()
+                markdown = clean_markdown_content(response.text)
+
+            if len(markdown) < 100:
+                return CrawlResult(
+                    url=url,
+                    title=title,
+                    markdown_content="",
+                    success=False,
+                    error_message="Jina Reader returned insufficient content",
+                )
+
+            return CrawlResult(
+                url=url,
+                title=title,
+                markdown_content=markdown,
+                success=True,
+            )
+        except Exception as exc:
+            return CrawlResult(
+                url=url,
+                title=title,
+                markdown_content="",
+                success=False,
+                error_message=f"Jina Reader fetch failed: {exc}",
+            )
 
     async def _do_crawl(self, url: str, title: str) -> CrawlResult:
         """Perform the actual crawl."""
@@ -204,4 +292,3 @@ class CrawlerService:
                 success=False,
                 error_message=f"Fallback fetch failed: {e}"
             )
-

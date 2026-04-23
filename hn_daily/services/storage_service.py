@@ -1,7 +1,6 @@
 """Storage service for saving content to markdown files."""
 
 import re
-import os
 from pathlib import Path
 from datetime import datetime
 from typing import Optional
@@ -112,16 +111,17 @@ class StorageService:
 
     def _format_comment(self, comment: Comment, depth: int) -> list[str]:
         """Format a comment and its children as markdown."""
-        lines = []
         indent = "  " * depth
+        content_indent = f"{indent}  "
+        lines = [
+            f"{indent}- **{comment.author}** (_{comment.created_at.strftime('%Y-%m-%d %H:%M')}_)"
+        ]
 
-        lines.extend([
-            f"{indent}### {comment.author}",
-            f"{indent}_{comment.created_at.strftime('%Y-%m-%d %H:%M')}_",
-            "",
-            f"{indent}{comment.text}",
-            "",
-        ])
+        body_lines = comment.text.splitlines() or [""]
+        for body_line in body_lines:
+            lines.append(f"{content_indent}{body_line}" if body_line else "")
+
+        lines.append("")
 
         for child in comment.children:
             lines.extend(self._format_comment(child, depth + 1))

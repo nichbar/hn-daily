@@ -199,6 +199,43 @@ def test_format_comment_with_children():
 
     lines = service._format_comment(parent, depth=0)
 
-    assert "### parent_user" in lines[0]
+    assert "- **parent_user** (_2025-01-19 11:00_)" == lines[0]
     assert "child_user" in " ".join(lines)  # Child appears in formatted output
     assert "Child reply" in " ".join(lines)  # Child text appears in output
+
+
+def test_format_comment_with_grandchild_uses_nested_list_markdown():
+    """Deeply nested comments should stay as markdown lists, not code blocks."""
+    service = StorageService()
+
+    grandchild = Comment(
+        comment_id=3,
+        author="grandchild_user",
+        text="Grandchild reply",
+        created_at=datetime(2025, 1, 19, 12, 30, 0, tzinfo=timezone.utc),
+        parent_id=2,
+        children=[]
+    )
+
+    child = Comment(
+        comment_id=2,
+        author="child_user",
+        text="Child reply",
+        created_at=datetime(2025, 1, 19, 12, 0, 0, tzinfo=timezone.utc),
+        parent_id=1,
+        children=[grandchild]
+    )
+
+    parent = Comment(
+        comment_id=1,
+        author="parent_user",
+        text="Parent comment",
+        created_at=datetime(2025, 1, 19, 11, 0, 0, tzinfo=timezone.utc),
+        parent_id=12345,
+        children=[child]
+    )
+
+    lines = service._format_comment(parent, depth=0)
+
+    assert "    - **grandchild_user** (_2025-01-19 12:30_)" in lines
+    assert all(not line.startswith("    ###") for line in lines)

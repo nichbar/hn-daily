@@ -1,7 +1,7 @@
 """Story service for fetching stories from Algolia Hacker News API."""
 
 import httpx
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from dateutil.parser import isoparse
 
@@ -16,7 +16,8 @@ class ApiError(Exception):
 class StoryService:
     """Fetches top stories from Algolia Hacker News API."""
 
-    BASE_URL = "https://hn.algolia.com/api/v1/search"
+    BASE_URL = "https://hn.algolia.com/api/v1/search_by_date"
+    PAGE_SIZE = 100
 
     def __init__(self, timeout: float = 30.0):
         self.timeout = timeout
@@ -49,27 +50,80 @@ class StoryService:
         Returns:
             List of Story objects
         """
-        if date is None:
-            yesterday = datetime.now(timezone.utc)
-        else:
-            yesterday = date.replace(tzinfo=timezone.utc)
+        if limit <= 0:
+            return []
 
-        yesterday_start = yesterday.replace(
+        target_date = self._resolve_target_date(date)
+        start_timestamp, end_timestamp = self._get_day_timestamps(target_date)
+        stories = await self._fetch_stories_for_window(start_timestamp, end_timestamp)
+        stories.sort(
+            key=lambda story: (story.points, story.num_comments, story.created_at),
+            reverse=True,
+        )
+        return stories[:limit]
+
+    def _resolve_target_date(self, date: Optional[datetime]) -> datetime:
+        """Resolve the date to fetch, defaulting to yesterday in UTC."""
+        if date is None:
+            return datetime.now(timezone.utc) - timedelta(days=1)
+        if date.tzinfo is None:
+            return date.replace(tzinfo=timezone.utc)
+        return date.astimezone(timezone.utc)
+
+    def _get_day_timestamps(self, date: datetime) -> tuple[int, int]:
+        """Return the inclusive start and exclusive end timestamps for a UTC day."""
+        day_start = date.astimezone(timezone.utc).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
-        timestamp = int(yesterday_start.timestamp())
+        next_day_start = day_start + timedelta(days=1)
+        return int(day_start.timestamp()), int(next_day_start.timestamp())
 
-        url = self._build_url(timestamp, limit)
-        response = await self._make_request(url)
-        return self._parse_response(response)
+    async def _fetch_stories_for_window(
+        self,
+        start_timestamp: int,
+        end_timestamp: int,
+    ) -> list[Story]:
+        """Fetch all stories for a bounded day window and deduplicate them."""
+        stories_by_id: dict[str, Story] = {}
+        page = 0
 
-    def _build_url(self, timestamp: int, limit: int) -> str:
+        while True:
+            url = self._build_url(
+                start_timestamp,
+                end_timestamp,
+                page=page,
+                hits_per_page=self.PAGE_SIZE,
+            )
+            response = await self._make_request(url)
+
+            for story in self._parse_response(response):
+                created_at_timestamp = int(story.created_at.astimezone(timezone.utc).timestamp())
+                if start_timestamp <= created_at_timestamp < end_timestamp:
+                    story_key = story.object_id or str(story.story_id)
+                    stories_by_id[story_key] = story
+
+            nb_pages = max(response.get("nbPages", 0), 1)
+            if page + 1 >= nb_pages:
+                break
+
+            page += 1
+
+        return list(stories_by_id.values())
+
+    def _build_url(
+        self,
+        start_timestamp: int,
+        end_timestamp: int,
+        page: int = 0,
+        hits_per_page: int = PAGE_SIZE,
+    ) -> str:
         """Build the Algolia API URL with proper filters."""
         return (
             f"{self.BASE_URL}?"
             f"tags=story&"
-            f"numericFilters=created_at_i>={timestamp}&"
-            f"hitsPerPage={limit}"
+            f"numericFilters=created_at_i>={start_timestamp},created_at_i<{end_timestamp}&"
+            f"hitsPerPage={hits_per_page}&"
+            f"page={page}"
         )
 
     async def _make_request(self, url: str) -> dict:
@@ -101,6 +155,6 @@ class StoryService:
                     num_comments=hit.get("num_comments", 0)
                 )
                 stories.append(story)
-            except (KeyError, ValueError) as e:
+            except (KeyError, ValueError):
                 continue  # Skip invalid entries
         return stories

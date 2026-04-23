@@ -25,7 +25,7 @@ def story():
 @respx.mock
 @pytest.mark.asyncio
 async def test_get_comments_sorting_and_limit(comment_service, story):
-    """Test that comments are sorted by descendant count and limited to 10."""
+    """Test that top-level comments are sorted by descendant count and limited to 2."""
 
     # Create 12 comments with different number of children
     # We use a simple structure where children are direct children
@@ -65,8 +65,9 @@ async def test_get_comments_sorting_and_limit(comment_service, story):
     comments = await comment_service.get_comments_for_story(story)
 
     # Assert limit
-    assert len(comments) == 1
+    assert len(comments) == 2
 
-    # Assert sorting: First comment should have most children (ID 12)
+    # Assert sorting: First comments should have the most children
     assert comments[0].comment_id == 12
+    assert comments[1].comment_id == 11
     assert len(comments[0].children) == 12
