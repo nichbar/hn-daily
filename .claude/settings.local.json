@@ -1,5 +1,46 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions"
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Skill(daily)",
+      "Skill(chinese-writing)",
+      "Bash(date:*)",
+      "Bash(ls:*)",
+      "Bash(test:*)",
+      "Bash(mkdir:*)",
+      "Bash(pip install:*)",
+      "Bash(pip show:*)",
+      "Bash(python -c:*)",
+      "Bash(python -m hn_daily:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python -m playwright install chromium:*)",
+      "Bash(hugo version:*)",
+      "Bash(./scripts/build.sh:*)",
+      "Bash(hugo server:*)",
+      "Bash(rtk ls:*)",
+      "WebFetch(domain:qwen.ai)",
+      "WebFetch(domain:blog.google)",
+      "WebFetch(domain:fingerprint.com)",
+      "WebFetch(domain:techcrunch.com)",
+      "WebFetch(domain:cli.github.com)",
+      "WebFetch(domain:social.hails.org)",
+      "WebFetch(domain:wheelfront.com)",
+      "WebFetch(domain:nrehiew.github.io)",
+      "WebFetch(domain:tech.marksblogg.com)",
+      "WebFetch(domain:www.adriankrebs.ch)",
+      "WebFetch(domain:qwenlm.ai)",
+      "WebFetch(domain:chat.qwen.ai)",
+      "Bash(xargs -I{} basename {})",
+      "Bash(rtk read:*)",
+      "Bash(sort -t: -k4 -rn)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Bash(rtk grep:*)",
+      "Bash(done)"
+    ]
   }
 }

@@ -17,7 +17,9 @@ description: 调用爬虫脚本
 
 1. 确定 `$target_date` 和 `$draft_dir`。
 2. 执行：
-   `python -m hn_daily --date $target_date --limit 15 --output $draft_dir`
+   `python -m hn_daily --date $target_date --limit 20 --output $draft_dir`
 3. 仅当命令执行成功，且 `$draft_dir` 下至少生成一个 `.md` 草稿文件时，任务才算完成。
+
+这 20 篇 story 是候选池，不是最终成稿数量。
 
 不要修改其他目录，也不要输出额外总结。
