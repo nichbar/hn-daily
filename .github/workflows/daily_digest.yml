@@ -20,22 +20,32 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.19.0"
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           python -m playwright install chromium
 
-      - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code@2.1.77
+      - name: Install Pi agent CLI
+        run: npm install -g --ignore-scripts @earendil-works/pi-coding-agent@0.78.1
 
       - name: Generate daily digest
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || secrets.ANTHROPIC_AUTH_TOKEN }}
           ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
-          ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
-          ANTHROPIC_DEFAULT_HAIKU_MODEL: ${{ secrets.ANTHROPIC_DEFAULT_HAIKU_MODEL }}
-          ANTHROPIC_DEFAULT_OPUS_MODEL: ${{ secrets.ANTHROPIC_DEFAULT_OPUS_MODEL }}
-          ANTHROPIC_DEFAULT_SONNET_MODEL: ${{ secrets.ANTHROPIC_DEFAULT_SONNET_MODEL }}
-        run: claude -p "/daily"
+          PI_MODEL: ${{ vars.PI_MODEL || 'claude-sonnet-4-5' }}
+          PI_PROVIDER: ${{ vars.PI_PROVIDER || 'anthropic' }}
+          PI_SKIP_VERSION_CHECK: "1"
+          PI_TELEMETRY: "0"
+        run: |
+          if [ -n "$ANTHROPIC_BASE_URL" ]; then
+            node -e 'const fs = require("fs"); const dir = `${process.env.HOME}/.pi/agent`; fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(`${dir}/models.json`, `${JSON.stringify({ providers: { anthropic: { baseUrl: process.env.ANTHROPIC_BASE_URL } } })}\n`);'
+          fi
+          pi --approve --provider "$PI_PROVIDER" --model "$PI_MODEL" --thinking high --no-session -p "/daily"
 
       - name: Commit and push changes
         run: |

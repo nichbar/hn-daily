@@ -1,0 +1,6 @@
+{
+  "enableInstallTelemetry": false,
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-sonnet-4-5",
+  "defaultThinkingLevel": "high"
+}
