@@ -16,7 +16,10 @@ python -m hn_daily
 python -m pytest tests/ -v
 
 # Generate the daily digest with Pi agent
-pi --approve --provider anthropic --model claude-sonnet-4-5 --thinking high -p "/daily"
+pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \
+  --prompt-template .pi/prompts/daily.md \
+  --skill .pi/skills/chinese-writing \
+  -p "/daily"
 ```
 
 ## Project Structure

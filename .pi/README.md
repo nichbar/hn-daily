@@ -19,13 +19,19 @@ export ANTHROPIC_API_KEY=sk-ant-...
 Generate the default target date, which is local yesterday:
 
 ```bash
-pi --approve --provider anthropic --model claude-sonnet-4-5 --thinking high -p "/daily"
+pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \
+  --prompt-template .pi/prompts/daily.md \
+  --skill .pi/skills/chinese-writing \
+  -p "/daily"
 ```
 
 Generate a specific date:
 
 ```bash
-pi --approve --provider anthropic --model claude-sonnet-4-5 --thinking high -p "/daily 2026-04-22"
+pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \
+  --prompt-template .pi/prompts/daily.md \
+  --skill .pi/skills/chinese-writing \
+  -p "/daily 2026-04-22"
 ```
 
 ## GitHub Actions

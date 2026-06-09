@@ -45,7 +45,10 @@ jobs:
           if [ -n "$ANTHROPIC_BASE_URL" ]; then
             node -e 'const fs = require("fs"); const dir = `${process.env.HOME}/.pi/agent`; fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(`${dir}/models.json`, `${JSON.stringify({ providers: { anthropic: { baseUrl: process.env.ANTHROPIC_BASE_URL } } })}\n`);'
           fi
-          pi --approve --provider "$PI_PROVIDER" --model "$PI_MODEL" --thinking high --no-session -p "/daily"
+          pi --provider "$PI_PROVIDER" --model "$PI_MODEL" --thinking high --no-session \
+            --prompt-template .pi/prompts/daily.md \
+            --skill .pi/skills/chinese-writing \
+            -p "/daily"
 
       - name: Commit and push changes
         run: |
