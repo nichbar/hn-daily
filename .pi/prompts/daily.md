@@ -11,12 +11,11 @@ argument-hint: "[YYYY-MM-DD]"
 
 优先使用命令参数中的目标日期：`$1`。
 
-如果没有提供目标日期，按下面顺序获取“本地时区的昨天”并命名为 `$target_date`：
+如果没有提供目标日期，使用下面命令获取“今天”并命名为 `$target_date`：
 
-1. 先尝试 GNU/Linux 命令：`date -d "yesterday" +%Y-%m-%d`
-2. 如果失败，再尝试 BSD/macOS 命令：`date -v-1d +%Y-%m-%d`
-
-只有当第 1 条命令不可用或执行失败时，才使用第 2 条命令。
+```bash
+date +%Y-%m-%d
+```
 
 再将 `$target_date` 拆分为：
 

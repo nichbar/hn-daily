@@ -101,8 +101,8 @@ async def test_get_top_stories_from_date_fetches_full_day_and_sorts_by_points(st
 
 @respx.mock
 @pytest.mark.asyncio
-async def test_get_top_stories_from_yesterday_defaults_to_previous_utc_day(story_service):
-    """The default query date should be yesterday in UTC."""
+async def test_get_top_stories_from_yesterday_defaults_to_current_day(story_service):
+    """The default query date should be today."""
     response = {
         "hits": [
             {
@@ -111,7 +111,7 @@ async def test_get_top_stories_from_yesterday_defaults_to_previous_utc_day(story
                 "url": "https://example.com/project",
                 "author": "developer",
                 "points": 150,
-                "created_at": "2025-01-19T10:00:00Z",
+                "created_at": "2025-01-20T10:00:00Z",
                 "story_id": 12345,
                 "num_comments": 25,
             }
@@ -130,8 +130,8 @@ async def test_get_top_stories_from_yesterday_defaults_to_previous_utc_day(story
         stories = await story_service.get_top_stories_from_yesterday(limit=15)
 
     request_url = str(route.calls.last.request.url)
-    assert "created_at_i%3E=1737244800" in request_url
-    assert "created_at_i%3C1737331200" in request_url
+    assert "created_at_i%3E=1737331200" in request_url
+    assert "created_at_i%3C1737417600" in request_url
     assert len(stories) == 1
 
 

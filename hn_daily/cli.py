@@ -42,7 +42,7 @@ async def run_daily_digest(
     Run the full daily digest workflow.
 
     Args:
-        date: Date in YYYY-MM-DD format (defaults to yesterday)
+        date: Date in YYYY-MM-DD format (defaults to today)
         limit: Number of stories to fetch
         output_dir: Output directory for markdown files
     """
@@ -165,7 +165,7 @@ def main():
     parser.add_argument(
         "--date",
         type=str,
-        help="Date in YYYY-MM-DD format (defaults to yesterday)"
+        help="Date in YYYY-MM-DD format (defaults to today)"
     )
     parser.add_argument(
         "--limit",

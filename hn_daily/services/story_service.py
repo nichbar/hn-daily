@@ -41,11 +41,11 @@ class StoryService:
         date: Optional[datetime] = None
     ) -> list[Story]:
         """
-        Fetch top stories from yesterday, ordered by points desc.
+        Fetch top stories for a target day, ordered by points desc.
 
         Args:
             limit: Maximum number of stories to return
-            date: Optional date to fetch stories from (defaults to yesterday)
+            date: Optional date to fetch stories from (defaults to today)
 
         Returns:
             List of Story objects
@@ -63,9 +63,9 @@ class StoryService:
         return stories[:limit]
 
     def _resolve_target_date(self, date: Optional[datetime]) -> datetime:
-        """Resolve the date to fetch, defaulting to yesterday in UTC."""
+        """Resolve the date to fetch, defaulting to today."""
         if date is None:
-            return datetime.now(timezone.utc) - timedelta(days=1)
+            return datetime.now(timezone.utc)
         if date.tzinfo is None:
             return date.replace(tzinfo=timezone.utc)
         return date.astimezone(timezone.utc)
