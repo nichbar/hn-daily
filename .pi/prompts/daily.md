@@ -67,13 +67,14 @@ comments: "中文精选评论，包含 Hacker News 讨论中的观点，100~200 
 hn_url: "https://news.ycombinator.com/item?id=..."
 ```
 
-`hn_url` 是可选字段。只有在草稿中明确存在，或能从可靠元数据中恢复时才填写。不能猜。
+`hn_url` 是必填字段，必须来自草稿中的 `HN URL` 元数据，格式为 `https://news.ycombinator.com/item?id=...`。如果草稿缺少该字段或无法可靠恢复，跳过该故事，不能猜。
 
 字段约束：
 
 - `points` 必须是整数。
 - `topic` 只能是 `technology`、`business`、`policy`、`science`、`society` 之一。
 - `category` 只能是 `news` 或 `blog`。
+- `hn_url` 必须是 `https://news.ycombinator.com/item?id=...` 格式的 Hacker News 帖子链接。
 - `why_it_matters` 必须为 1 句话，且不空泛。
 - 字符串值如包含冒号、特殊字符需正确引用。
 - 不要在 `summary` 或 `comments` 中生成“原文链接”“阅读更多”等独立提示语，链接信息由 `url` / `hn_url` 字段承载。
@@ -129,7 +130,7 @@ hn_url: "https://news.ycombinator.com/item?id=..."
 
 - 面向好奇的广义读者，不要默认读者是开发者。
 - 原文链接必须保留，并以锚文本形式嵌入段落。禁止单独列出“原文链接”或“阅读更多”。
-- 如果输入中提供 `hn_url`，可以在条目末尾补一句 `讨论见 [Hacker News 帖子](url)`；如果没有，就只保留对 HN 观点的文字归因。
+- 每个条目末尾必须包含 `讨论见 [Hacker News 帖子](url)`，其中 `url` 来自输入的 `hn_url`。
 - 必须明确区分原文观点、作者解读与 HN 社区观点；每个条目至少一次显式标注来源。
 - 不要使用 Emoji。
 - 不要使用 `# 文章梗概和评论反响` 作为独立标题。

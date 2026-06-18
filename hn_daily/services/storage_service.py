@@ -80,6 +80,7 @@ class StorageService:
             "",
             f"**Author:** {story.author} | **Points:** {story.points} | **Comments:** {story.num_comments}",
             f"**URL:** {story.url or f'https://news.ycombinator.com/item?id={story.story_id}'}",
+            f"**HN URL:** https://news.ycombinator.com/item?id={story.story_id}",
             f"**Date:** {story.created_at.strftime('%Y-%m-%d %H:%M:%S')}",
             "",
             "---",

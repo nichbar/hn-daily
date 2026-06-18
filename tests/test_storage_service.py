@@ -108,6 +108,7 @@ def test_create_markdown(sample_story, sample_crawl_result, sample_comments):
     assert "# Test Story: A Great Article!" in markdown
     assert "**Author:** testuser" in markdown
     assert "**Points:** 100" in markdown
+    assert "**HN URL:** https://news.ycombinator.com/item?id=12345" in markdown
     assert "## Crawled Content" in markdown
     assert "# Article Content" in markdown
     assert "## Comments (2)" in markdown
