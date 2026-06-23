@@ -1,12 +1,13 @@
 """Comment service for fetching comments from Hacker News."""
 
 import httpx
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 from dateutil.parser import isoparse
 import asyncio
 
 from ..models import Story, Comment
+from ..timezone import APP_TIMEZONE
 
 
 class CommentService:
@@ -87,7 +88,7 @@ class CommentService:
             comment_id=data.get("id", 0),
             author=data.get("author", "unknown"),
             text=data.get("text", ""),
-            created_at=isoparse(data["created_at"]) if data.get("created_at") else datetime.now(timezone.utc),
+            created_at=isoparse(data["created_at"]) if data.get("created_at") else datetime.now(APP_TIMEZONE),
             parent_id=data.get("parent_id", 0),
             children=children
         )

@@ -1,10 +1,10 @@
 # hn-daily
 
-Hacker News daily digest fetcher with Jina Reader and crawl4ai. Fetches top stories from today, crawls content and comments, saves to markdown.
+Hacker News daily digest fetcher with Jina Reader and crawl4ai. Fetches top stories from yesterday in UTC+8, crawls content and comments, saves to markdown.
 
 ## Features
 
-- Fetches top stories from Hacker News (today) via Algolia API (default 15, configurable)
+- Fetches top stories from Hacker News (yesterday in UTC+8) via Algolia API (default 10, configurable)
 - Fetches article markdown with Jina Reader first for external URLs, then falls back to local crawling
 - Crawls story content and comments using crawl4ai
 - Saves story markdown files to `drafts/` (configurable via `--output`)
@@ -24,7 +24,7 @@ export JINA_API_KEY=your_api_key
 ## Usage
 
 ```bash
-# Run with defaults (today's top 10 stories)
+# Run with defaults (yesterday's top 10 stories in UTC+8)
 python -m hn_daily
 
 # With options

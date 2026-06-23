@@ -16,6 +16,7 @@ from .services import (
     StorageService,
     HistoryService
 )
+from .timezone import APP_TIMEZONE
 
 
 console = Console()
@@ -30,7 +31,7 @@ def check_python_version():
 
 def parse_date(date_str: str) -> datetime:
     """Parse date string to datetime."""
-    return datetime.strptime(date_str, "%Y-%m-%d")
+    return datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=APP_TIMEZONE)
 
 
 async def run_daily_digest(
@@ -42,7 +43,7 @@ async def run_daily_digest(
     Run the full daily digest workflow.
 
     Args:
-        date: Date in YYYY-MM-DD format (defaults to today)
+        date: Date in YYYY-MM-DD format (defaults to yesterday in UTC+8)
         limit: Number of stories to fetch
         output_dir: Output directory for markdown files
     """
@@ -165,7 +166,7 @@ def main():
     parser.add_argument(
         "--date",
         type=str,
-        help="Date in YYYY-MM-DD format (defaults to today)"
+        help="Date in YYYY-MM-DD format (defaults to yesterday in UTC+8)"
     )
     parser.add_argument(
         "--limit",

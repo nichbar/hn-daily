@@ -1,6 +1,6 @@
 """Integration tests for StoryService with mocked API responses."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import pytest
@@ -8,6 +8,7 @@ import respx
 from httpx import Response
 
 from hn_daily.services.story_service import StoryService, ApiError
+from hn_daily.timezone import APP_TIMEZONE
 
 
 class FrozenDateTime(datetime):
@@ -15,7 +16,9 @@ class FrozenDateTime(datetime):
 
     @classmethod
     def now(cls, tz=None):
-        return cls(2025, 1, 20, 12, 0, 0, tzinfo=tz or timezone.utc)
+        if tz is None:
+            tz = timezone.utc
+        return cls(2025, 1, 20, 12, 0, 0, tzinfo=timezone.utc).astimezone(tz)
 
 
 @pytest.fixture
@@ -36,7 +39,7 @@ async def test_get_top_stories_from_date_fetches_full_day_and_sorts_by_points(st
                 "url": "https://example.com/morning",
                 "author": "alice",
                 "points": 50,
-                "created_at": "2025-01-19T08:00:00Z",
+                "created_at": "2025-01-18T18:00:00Z",
                 "story_id": 111,
                 "num_comments": 5,
             },
@@ -101,8 +104,8 @@ async def test_get_top_stories_from_date_fetches_full_day_and_sorts_by_points(st
 
 @respx.mock
 @pytest.mark.asyncio
-async def test_get_top_stories_from_yesterday_defaults_to_current_day(story_service):
-    """The default query date should be today."""
+async def test_get_top_stories_from_yesterday_defaults_to_previous_utc8_day(story_service):
+    """The default query date should be yesterday in UTC+8."""
     response = {
         "hits": [
             {
@@ -111,7 +114,7 @@ async def test_get_top_stories_from_yesterday_defaults_to_current_day(story_serv
                 "url": "https://example.com/project",
                 "author": "developer",
                 "points": 150,
-                "created_at": "2025-01-20T10:00:00Z",
+                "created_at": "2025-01-19T10:00:00Z",
                 "story_id": 12345,
                 "num_comments": 25,
             }
@@ -130,8 +133,8 @@ async def test_get_top_stories_from_yesterday_defaults_to_current_day(story_serv
         stories = await story_service.get_top_stories_from_yesterday(limit=15)
 
     request_url = str(route.calls.last.request.url)
-    assert "created_at_i%3E=1737331200" in request_url
-    assert "created_at_i%3C1737417600" in request_url
+    assert "created_at_i%3E=1737216000" in request_url
+    assert "created_at_i%3C1737302400" in request_url
     assert len(stories) == 1
 
 
@@ -204,14 +207,22 @@ def test_build_url():
     assert "page=3" in url
 
 
-def test_get_day_timestamps_uses_single_utc_day(story_service):
-    """Day timestamp helper should return the current day's UTC bounds."""
+def test_get_day_timestamps_uses_single_utc8_day(story_service):
+    """Day timestamp helper should return UTC+8 calendar day bounds."""
     start_timestamp, end_timestamp = story_service._get_day_timestamps(
         datetime(2025, 1, 19, 8, 30, tzinfo=timezone.utc)
     )
 
-    assert start_timestamp == 1737244800
-    assert end_timestamp == 1737331200
+    assert start_timestamp == 1737216000
+    assert end_timestamp == 1737302400
+
+
+def test_resolve_target_date_defaults_to_yesterday_in_utc8(story_service):
+    """Default target date should be yesterday on the app timezone calendar."""
+    with patch("hn_daily.services.story_service.datetime", FrozenDateTime):
+        target_date = story_service._resolve_target_date(None)
+
+    assert target_date == datetime(2025, 1, 20, 20, 0, tzinfo=APP_TIMEZONE) - timedelta(days=1)
 
 
 @pytest.mark.asyncio

@@ -16,7 +16,7 @@ Provide credentials for your chosen provider. The default project settings use A
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-Generate the default target date, which is today:
+Generate the default target date, which is yesterday in UTC+8:
 
 ```bash
 pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \

@@ -6,6 +6,7 @@ from typing import Optional
 from dateutil.parser import isoparse
 
 from ..models import Story
+from ..timezone import APP_TIMEZONE
 
 
 class ApiError(Exception):
@@ -45,7 +46,7 @@ class StoryService:
 
         Args:
             limit: Maximum number of stories to return
-            date: Optional date to fetch stories from (defaults to today)
+            date: Optional date to fetch stories from (defaults to yesterday in UTC+8)
 
         Returns:
             List of Story objects
@@ -63,16 +64,16 @@ class StoryService:
         return stories[:limit]
 
     def _resolve_target_date(self, date: Optional[datetime]) -> datetime:
-        """Resolve the date to fetch, defaulting to today."""
+        """Resolve the date to fetch, defaulting to yesterday in UTC+8."""
         if date is None:
-            return datetime.now(timezone.utc)
+            return datetime.now(APP_TIMEZONE) - timedelta(days=1)
         if date.tzinfo is None:
-            return date.replace(tzinfo=timezone.utc)
-        return date.astimezone(timezone.utc)
+            return date.replace(tzinfo=APP_TIMEZONE)
+        return date.astimezone(APP_TIMEZONE)
 
     def _get_day_timestamps(self, date: datetime) -> tuple[int, int]:
-        """Return the inclusive start and exclusive end timestamps for a UTC day."""
-        day_start = date.astimezone(timezone.utc).replace(
+        """Return the inclusive start and exclusive end timestamps for a UTC+8 day."""
+        day_start = date.astimezone(APP_TIMEZONE).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
         next_day_start = day_start + timedelta(days=1)
@@ -150,7 +151,7 @@ class StoryService:
                     url=hit.get("url"),
                     author=hit.get("author", "unknown"),
                     points=hit.get("points", 0),
-                    created_at=isoparse(hit["created_at"]) if hit.get("created_at") else datetime.now(timezone.utc),
+                    created_at=isoparse(hit["created_at"]) if hit.get("created_at") else datetime.now(APP_TIMEZONE),
                     story_id=hit.get("story_id", 0),
                     num_comments=hit.get("num_comments", 0)
                 )

@@ -109,6 +109,7 @@ def test_create_markdown(sample_story, sample_crawl_result, sample_comments):
     assert "**Author:** testuser" in markdown
     assert "**Points:** 100" in markdown
     assert "**HN URL:** https://news.ycombinator.com/item?id=12345" in markdown
+    assert "**Date:** 2025-01-19 18:00:00" in markdown
     assert "## Crawled Content" in markdown
     assert "# Article Content" in markdown
     assert "## Comments (2)" in markdown
@@ -200,7 +201,7 @@ def test_format_comment_with_children():
 
     lines = service._format_comment(parent, depth=0)
 
-    assert "- **parent_user** (_2025-01-19 11:00_)" == lines[0]
+    assert "- **parent_user** (_2025-01-19 19:00_)" == lines[0]
     assert "child_user" in " ".join(lines)  # Child appears in formatted output
     assert "Child reply" in " ".join(lines)  # Child text appears in output
 
@@ -238,5 +239,5 @@ def test_format_comment_with_grandchild_uses_nested_list_markdown():
 
     lines = service._format_comment(parent, depth=0)
 
-    assert "    - **grandchild_user** (_2025-01-19 12:30_)" in lines
+    assert "    - **grandchild_user** (_2025-01-19 20:30_)" in lines
     assert all(not line.startswith("    ###") for line in lines)

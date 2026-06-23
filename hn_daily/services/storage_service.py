@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Optional
 
 from ..models import Story, Comment, CrawlResult
+from ..timezone import APP_TIMEZONE
 
 
 class StorageService:
@@ -55,7 +56,7 @@ class StorageService:
 
     def _generate_filename(self, story: Story) -> str:
         """Generate a safe filename from the story title."""
-        timestamp = datetime.now().strftime("%Y%m%d")
+        timestamp = datetime.now(APP_TIMEZONE).strftime("%Y%m%d")
         sanitized = self._sanitize_title(story.title)
         return f"{sanitized}_{timestamp}.md"
 
@@ -81,7 +82,7 @@ class StorageService:
             f"**Author:** {story.author} | **Points:** {story.points} | **Comments:** {story.num_comments}",
             f"**URL:** {story.url or f'https://news.ycombinator.com/item?id={story.story_id}'}",
             f"**HN URL:** https://news.ycombinator.com/item?id={story.story_id}",
-            f"**Date:** {story.created_at.strftime('%Y-%m-%d %H:%M:%S')}",
+            f"**Date:** {story.created_at.astimezone(APP_TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')}",
             "",
             "---",
             "",
@@ -115,7 +116,7 @@ class StorageService:
         indent = "  " * depth
         content_indent = f"{indent}  "
         lines = [
-            f"{indent}- **{comment.author}** (_{comment.created_at.strftime('%Y-%m-%d %H:%M')}_)"
+            f"{indent}- **{comment.author}** (_{comment.created_at.astimezone(APP_TIMEZONE).strftime('%Y-%m-%d %H:%M')}_)"
         ]
 
         body_lines = comment.text.splitlines() or [""]
