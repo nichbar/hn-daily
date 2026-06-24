@@ -2,7 +2,8 @@ name: Generate daily digest
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    # 06:00 UTC+8. The prompt resolves the target date to yesterday in UTC+8.
+    - cron: "0 22 * * *"
   workflow_dispatch:
 
 permissions:

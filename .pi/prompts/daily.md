@@ -11,10 +11,10 @@ argument-hint: "[YYYY-MM-DD]"
 
 优先使用命令参数中的目标日期：`$1`。
 
-如果没有提供目标日期，使用下面命令获取“今天”并命名为 `$target_date`：
+如果没有提供目标日期，使用下面命令获取“UTC+8 当前时间的昨天”并命名为 `$target_date`：
 
 ```bash
-date +%Y-%m-%d
+python -c 'from datetime import datetime, timedelta, timezone; print((datetime.now(timezone(timedelta(hours=8))) - timedelta(days=1)).strftime("%Y-%m-%d"))'
 ```
 
 再将 `$target_date` 拆分为：

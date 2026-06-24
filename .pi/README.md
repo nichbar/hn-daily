@@ -16,7 +16,7 @@ Provide credentials for your chosen provider. The default project settings use A
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-Generate the default target date, which is yesterday in UTC+8:
+Generate the default target date, which is yesterday relative to the current UTC+8 time:
 
 ```bash
 pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \
@@ -36,7 +36,7 @@ pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \
 
 ## GitHub Actions
 
-The scheduled workflow installs `@earendil-works/pi-coding-agent` and runs the `/daily` prompt from `.pi/prompts/daily.md`.
+The scheduled workflow runs at 06:00 UTC+8. It installs `@earendil-works/pi-coding-agent` and runs the `/daily` prompt from `.pi/prompts/daily.md`; without an explicit date argument, that prompt targets yesterday relative to the current UTC+8 time.
 
 Recommended repository secrets and variables:
 

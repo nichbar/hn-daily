@@ -4,7 +4,7 @@ Hacker News daily digest fetcher with Jina Reader and crawl4ai. Fetches top stor
 
 ## Features
 
-- Fetches top stories from Hacker News (yesterday in UTC+8) via Algolia API (default 10, configurable)
+- Fetches front-page stories from the Hacker News archive via Jina Reader (yesterday in UTC+8), then sorts locally by points (default 15, configurable)
 - Fetches article markdown with Jina Reader first for external URLs, then falls back to local crawling
 - Crawls story content and comments using crawl4ai
 - Saves story markdown files to `drafts/` (configurable via `--output`)
@@ -24,7 +24,7 @@ export JINA_API_KEY=your_api_key
 ## Usage
 
 ```bash
-# Run with defaults (yesterday's top 10 stories in UTC+8)
+# Run with defaults (yesterday's top 15 stories in UTC+8)
 python -m hn_daily
 
 # With options
@@ -75,8 +75,8 @@ hn-daily/
 │   ├── cli.py              # CLI entry point
 │   ├── models.py           # Story, Comment, CrawlResult
 │   └── services/
-│       ├── story_service.py    # Fetch from HN API
-│       ├── comment_service.py  # Fetch comments
+│       ├── story_service.py    # Fetch stories from HN front archive via Jina Reader
+│       ├── comment_service.py  # Fetch comments from Algolia item data
 │       ├── crawler_service.py  # crawl4ai integration
 │       └── storage_service.py  # Save to markdown
 ├── tests/

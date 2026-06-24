@@ -36,7 +36,7 @@ def parse_date(date_str: str) -> datetime:
 
 async def run_daily_digest(
     date: str | None = None,
-    limit: int = 10,
+    limit: int = 15,
     output_dir: str = "drafts"
 ):
     """
@@ -171,8 +171,8 @@ def main():
     parser.add_argument(
         "--limit",
         type=int,
-        default=10,
-        help="Number of stories to fetch (default: 10)"
+        default=15,
+        help="Number of stories to fetch (default: 15)"
     )
     parser.add_argument(
         "--output",
