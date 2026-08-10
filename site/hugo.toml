@@ -2,6 +2,7 @@ baseURL = "https://hn.hellmo.de/"
 languageCode = "zh-cn"
 title = "Hacker News 日报"
 theme = "hugo-theme-terminal"
+copyright = '© 2026 · <a href="https://github.com/nichbar/hn-daily" target="_blank" rel="noopener">GitHub</a>'
 [pagination]
   pagerSize = 10
 
@@ -21,7 +22,6 @@ enableRobotsTXT = true
   fullWidthTheme = false
   subtitle = "A simple, retro theme for Hugo"
   owner = "Everyone"
-  copyright = "No Copyright"
   menuMore = "显示更多"
   readMore = "查看更多"
   readOtherPosts = "阅读更多文章"
