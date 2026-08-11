@@ -37,7 +37,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || secrets.ANTHROPIC_AUTH_TOKEN }}
           ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
-          PI_MODEL: ${{ vars.PI_MODEL || 'claude-sonnet-4-5' }}
+          PI_MODEL: ${{ vars.PI_MODEL || 'deepseek-v4-flash' }}
           PI_PROVIDER: ${{ vars.PI_PROVIDER || 'anthropic' }}
           PI_SKIP_VERSION_CHECK: "1"
           PI_TELEMETRY: "0"

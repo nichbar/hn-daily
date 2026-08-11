@@ -113,7 +113,7 @@ hn_url: "https://news.ycombinator.com/item?id=..."
 
 文章必须包含：
 
-- Front matter：包含 `title`、`date`、`summary`、`tags`。
+- Front matter：包含 `title`、`date`、`summary`、`tags`、`editor`。
 - 一级标题 `# 本期热点`：开头必须以当日 `points` 最高的文章作为切入点，再简短、亲切地概述当期主要趋势或公共讨论主题。该依据仅用于内部排序，最终成稿中不要出现 `points` 字段、分数字样或具体分数值。
 - 分类板块：热点后直接进入二级标题主题分组，只渲染输入中实际存在的主题。
 - 一级标题 `# 尾巴`：总结并收束全文。
@@ -142,6 +142,7 @@ Front matter 约束：
 - `date` 必须等于 `$target_date`。
 - `summary` 为 1-2 句精华提炼。
 - `tags` 从内容里提取关键字，公司名优先，过滤 `Hacker News`。
+- `editor` 为本次撰写所用 LLM 模型 ID。优先读取环境变量 `PI_MODEL`；若未设置，则读取 `.github/workflows/daily_digest.yml` 中 `PI_MODEL` 的默认值（当前为 `deepseek-v4-flash`）。不要编造模型名。
 
 ## Phase 4：审核与修订
 
@@ -151,9 +152,10 @@ Front matter 约束：
 2. 严禁 Emoji。
 3. 严禁输出文章分数及评论数目，分数和评论数仅用于撰写时内部使用。
 4. 标题必须为 `"Hacker News 日报 (YYYY-MM-DD)"`。
-5. 必须明确区分原文观点、作者解读与 HN 社区观点，不得把 HN 评论写成事实共识。
-6. 不要默认读者是开发者；会妨碍理解的术语或行话，首次出现时应有自然、简短的上下文。
-7. 必须符合 `.pi/skills/chinese-writing/SKILL.md` 中标记为“必须”“严禁”“不要”的规则。
+5. Front matter 必须包含 `editor`，值为撰写所用 LLM 模型 ID（来自 `PI_MODEL` 或 `.github/workflows/daily_digest.yml` 中的默认值）。
+6. 必须明确区分原文观点、作者解读与 HN 社区观点，不得把 HN 评论写成事实共识。
+7. 不要默认读者是开发者；会妨碍理解的术语或行话，首次出现时应有自然、简短的上下文。
+8. 必须符合 `.pi/skills/chinese-writing/SKILL.md` 中标记为“必须”“严禁”“不要”的规则。
 
 如果发现问题，直接修改 `$daily_file`。审核与修改最多重复 3 次。3 次后仍未通过时，保存当前版本并在最终回复中说明需要人工介入。
 
