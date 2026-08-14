@@ -1,14 +1,19 @@
 baseURL = "https://hn.hellmo.de/"
-languageCode = "zh-cn"
 title = "Hacker News 日报"
 theme = "hugo-theme-terminal"
 copyright = '© 2026 · <a href="https://github.com/nichbar/hn-daily" target="_blank" rel="noopener">GitHub</a>'
+
+defaultContentLanguage = "zh"
+defaultContentLanguageInSubdir = false
+enableRobotsTXT = true
+
 [pagination]
   pagerSize = 10
 
-enableRobotsTXT = true
-
 [module]
+  [[module.mounts]]
+    source = "content"
+    target = "content"
   [[module.mounts]]
     source = "../daily"
     target = "content/posts"
@@ -16,28 +21,56 @@ enableRobotsTXT = true
 [params]
   contentTypeName = "posts"
   showMenuItems = 2
-  showLanguageSelector = false
+  showLanguageSelector = true
   themeColor = "Pistachio"
   centerTheme = true
   fullWidthTheme = false
-  subtitle = "A simple, retro theme for Hugo"
-  owner = "Everyone"
-  menuMore = "显示更多"
-  readMore = "查看更多"
-  readOtherPosts = "阅读更多文章"
-  newerPosts = "下一篇"
-  olderPosts = "上一篇"
-  missingContentMessage = "页面找不到..."
-  missingBackButtonLabel = "回到首页"
-  minuteReadingTime = "分钟阅读"
-  words = "words"
 
 [languages]
   [languages.zh]
     languageName = "中文"
+    languageCode = "zh-cn"
     title = "Hacker News 日报"
     weight = 1
+    copyright = '© 2026 · <a href="https://github.com/nichbar/hn-daily" target="_blank" rel="noopener">GitHub</a>'
 
-    [languages.en.params.logo]
-      logoText = "Hacker News 日报"
-      logoHomeLink = "/"
+    [languages.zh.params]
+      subtitle = "Hacker News 精选日报"
+      owner = "Everyone"
+      menuMore = "显示更多"
+      readMore = "查看更多"
+      readOtherPosts = "阅读更多文章"
+      newerPosts = "下一篇"
+      olderPosts = "上一篇"
+      missingContentMessage = "页面找不到..."
+      missingBackButtonLabel = "回到首页"
+      minuteReadingTime = "分钟阅读"
+      words = "words"
+
+      [languages.zh.params.logo]
+        logoText = "Hacker News 日报"
+        logoHomeLink = "/"
+
+  [languages.en]
+    languageName = "English"
+    languageCode = "en"
+    title = "Hacker News Daily"
+    weight = 2
+    copyright = '© 2026 · <a href="https://github.com/nichbar/hn-daily" target="_blank" rel="noopener">GitHub</a>'
+
+    [languages.en.params]
+      subtitle = "A curated daily digest of Hacker News"
+      owner = "Everyone"
+      menuMore = "Show more"
+      readMore = "Read more"
+      readOtherPosts = "Read other posts"
+      newerPosts = "Newer posts"
+      olderPosts = "Older posts"
+      missingContentMessage = "Page not found..."
+      missingBackButtonLabel = "Back to home"
+      minuteReadingTime = "min read"
+      words = "words"
+
+      [languages.en.params.logo]
+        logoText = "Hacker News Daily"
+        logoHomeLink = "/en/"

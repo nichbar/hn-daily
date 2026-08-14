@@ -8,7 +8,7 @@ Hacker News daily digest fetcher with Jina Reader and crawl4ai. Fetches top stor
 - Fetches article markdown with Jina Reader first for external URLs, then falls back to local crawling
 - Crawls story content and comments using crawl4ai
 - Saves story markdown files to `drafts/` (configurable via `--output`)
-- Daily digest posts are stored in `daily/` as `daily/YYYY/MM/YYYY-MM-DD.md` for the Hugo site
+- Daily digest posts are stored in `daily/` as `daily/YYYY/MM/YYYY-MM-DD.md` (Chinese) and `daily/YYYY/MM/YYYY-MM-DD.en.md` (English) for the Hugo site
 - Rich CLI output with progress tracking
 
 ## Installation
@@ -41,6 +41,7 @@ export ANTHROPIC_API_KEY=your_api_key
 pi --provider anthropic --model deepseek-v4-flash --thinking high --no-session \
   --prompt-template .pi/prompts/daily.md \
   --skill .pi/skills/chinese-writing \
+  --skill .pi/skills/english-writing \
   -p "/daily"
 ```
 
@@ -50,6 +51,7 @@ To generate a specific date:
 pi --provider anthropic --model deepseek-v4-flash --thinking high --no-session \
   --prompt-template .pi/prompts/daily.md \
   --skill .pi/skills/chinese-writing \
+  --skill .pi/skills/english-writing \
   -p "/daily 2025-01-19"
 ```
 

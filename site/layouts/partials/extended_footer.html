@@ -1,0 +1,7 @@
+<script>
+document.addEventListener("click", function (event) {
+  var link = event.target.closest("[data-set-lang]");
+  if (!link) return;
+  try { localStorage.setItem("hn-daily-lang", link.getAttribute("data-set-lang")); } catch (e) {}
+});
+</script>

@@ -19,6 +19,7 @@ python -m pytest tests/ -v
 pi --provider anthropic --model deepseek-v4-flash --thinking high --no-session \
   --prompt-template .pi/prompts/daily.md \
   --skill .pi/skills/chinese-writing \
+  --skill .pi/skills/english-writing \
   -p "/daily"
 ```
 
@@ -38,8 +39,9 @@ pi --provider anthropic --model deepseek-v4-flash --thinking high --no-session \
 - crawl4ai requires Playwright browsers to be installed
 - Failed crawls don't abort the batch - each story is processed independently
 - Output files use `YYYYMMDD` in filename to avoid collisions
-- `daily/` stores the final daily digest posts as `daily/YYYY/MM/YYYY-MM-DD.md` for the Hugo site
+- `daily/` stores the final daily digest posts as `daily/YYYY/MM/YYYY-MM-DD.md` (Chinese) and `daily/YYYY/MM/YYYY-MM-DD.en.md` (English) for the Hugo site
 - `.pi/prompts/daily.md` is the Pi agent prompt used by the scheduled daily digest workflow
+- The Hugo site detects the browser language on first visit and remembers the choice in `localStorage`
 
 ## Testing
 

@@ -1,7 +1,7 @@
 ---
-title: "Hacker News Daily"
+title: "Hacker News 日报"
 ---
 
-欢迎来到 Hacker News Daily。
+欢迎来到 Hacker News 日报。
 
-这里汇总每日精选内容，按日期归档。
+这里汇总每日精选内容，按日期归档。英文版从 2026-08-09 起提供，也可在右上角切换语言。

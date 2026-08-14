@@ -24,6 +24,7 @@ python -c 'from datetime import datetime, timedelta, timezone; print((datetime.n
 - `$draft_dir`：`drafts/$target_date`
 - `$draft_yaml`：`drafts/$target_date/drafts.yaml`
 - `$daily_file`：`daily/$year/$month/$target_date.md`
+- `$daily_file_en`：`daily/$year/$month/$target_date.en.md`
 
 ## 进度管理（产物即状态）
 
@@ -33,7 +34,7 @@ python -c 'from datetime import datetime, timedelta, timezone; print((datetime.n
 | --- | --- | --- |
 | Phase 1 | `$draft_dir/` 目录存在且包含至少一个 `.md` 文件 | 跳过 Phase 1，进入 Phase 2 |
 | Phase 2 | `$draft_yaml` 文件存在 | 跳过 Phase 1-2，进入 Phase 3 |
-| Phase 3 | `$daily_file` 文件存在 | 跳过 Phase 1-3，进入 Phase 4 |
+| Phase 3 | `$daily_file` 与 `$daily_file_en` 都存在 | 跳过 Phase 1-3，进入 Phase 4 |
 
 ## Phase 1：收集内容
 
@@ -107,13 +108,15 @@ hn_url: "https://news.ycombinator.com/item?id=..."
 
 ## Phase 3：撰写内容
 
-写作前必须读取 `.pi/skills/chinese-writing/SKILL.md`，并遵守其中“日报写作专项”与“格式一致性检查清单”。
+先写中文版 `$daily_file`，再写英文版 `$daily_file_en`。两篇都基于同一份 `$draft_yaml`，故事集合、排序和主题分组必须一致。如目录不存在请创建。
 
-读取 `$draft_yaml`，撰写最终 Markdown 日报到 `$daily_file`。如目录不存在请创建。
+### 3a. 中文版
+
+写作前必须读取 `.pi/skills/chinese-writing/SKILL.md`，并遵守其中“日报写作专项”与“格式一致性检查清单”。
 
 文章必须包含：
 
-- Front matter：包含 `title`、`date`、`summary`、`tags`、`editor`。
+- Front matter：包含 `title`、`date`、`summary`、`tags`、`editor`、`translationKey`。
 - 一级标题 `# 本期热点`：开头必须以当日 `points` 最高的文章作为切入点，再简短、亲切地概述当期主要趋势或公共讨论主题。该依据仅用于内部排序，最终成稿中不要出现 `points` 字段、分数字样或具体分数值。
 - 分类板块：热点后直接进入二级标题主题分组，只渲染输入中实际存在的主题。
 - 一级标题 `# 尾巴`：总结并收束全文。
@@ -143,20 +146,75 @@ Front matter 约束：
 - `summary` 为 1-2 句精华提炼。
 - `tags` 从内容里提取关键字，公司名优先，过滤 `Hacker News`。
 - `editor` 为本次撰写所用 LLM 模型 ID。优先读取环境变量 `PI_MODEL`；若未设置，则读取 `.github/workflows/daily_digest.yml` 中 `PI_MODEL` 的默认值（当前为 `deepseek-v4-flash`）。不要编造模型名。
+- `translationKey` 必须等于 `$target_date`，用于和英文版配对。
+
+### 3b. 英文版
+
+写作前必须读取 `.pi/skills/english-writing/SKILL.md`，并遵守其中 Daily Newsletter Writing 与 format checklist。
+
+英文版必须用英文重写，不要逐句翻译中文稿。标题、链接、`hn_url` 和主题分组与中文版保持一致。
+
+文章必须包含：
+
+- Front matter：包含 `title`、`date`、`summary`、`tags`、`editor`、`translationKey`。
+- 一级标题 `# Today's Highlights`：同样以当日 `points` 最高的文章开篇，再概述当天主题。不要出现 `points` 或分数。
+- 分类板块：只渲染输入中实际存在的主题。
+- 一级标题 `# Closing`：总结并收束全文。
+
+主题标题映射固定如下：
+
+- `technology` -> `## Tech and Products`
+- `business` -> `## Business and Platforms`
+- `policy` -> `## Policy and Governance`
+- `science` -> `## Science and Research`
+- `society` -> `## Society and Culture`
+
+写作约束：
+
+- Write for a curious general reader, not only developers.
+- Keep original links as inline anchor text. Do not add standalone “original link” or “read more” lines.
+- End every entry with `Discussion: [Hacker News thread](url)`, using `hn_url`.
+- Distinguish source claims, the digest’s reading, and HN reactions. Attribute HN views at least once per entry.
+- Do not use emoji.
+- Do not use `# Article summaries and comment reactions`.
+- Do not print points, scores, or comment counts.
+
+Front matter 约束：
+
+- `title` 格式为 `"Hacker News Daily (YYYY-MM-DD)"`。
+- `date` 必须等于 `$target_date`。
+- `summary` 为 1-2 句英文精华提炼。
+- `tags` 从内容里提取关键字，公司名优先，过滤 `Hacker News`。
+- `editor` 规则与中文版相同。
+- `translationKey` 必须等于 `$target_date`。
 
 ## Phase 4：审核与修订
 
-读取 `$daily_file`，按以下标准审核：
+分别审核 `$daily_file` 和 `$daily_file_en`。
+
+中文版标准：
 
 1. 保留原文链接。
 2. 严禁 Emoji。
 3. 严禁输出文章分数及评论数目，分数和评论数仅用于撰写时内部使用。
 4. 标题必须为 `"Hacker News 日报 (YYYY-MM-DD)"`。
-5. Front matter 必须包含 `editor`，值为撰写所用 LLM 模型 ID（来自 `PI_MODEL` 或 `.github/workflows/daily_digest.yml` 中的默认值）。
+5. Front matter 必须包含 `editor` 和 `translationKey`。`translationKey` 等于 `$target_date`。
 6. 必须明确区分原文观点、作者解读与 HN 社区观点，不得把 HN 评论写成事实共识。
 7. 不要默认读者是开发者；会妨碍理解的术语或行话，首次出现时应有自然、简短的上下文。
 8. 必须符合 `.pi/skills/chinese-writing/SKILL.md` 中标记为“必须”“严禁”“不要”的规则。
 
-如果发现问题，直接修改 `$daily_file`。审核与修改最多重复 3 次。3 次后仍未通过时，保存当前版本并在最终回复中说明需要人工介入。
+英文版标准：
 
-请一次性完成所有阶段，过程中无需向用户确认。最终回复只简要说明生成的 `$daily_file` 路径和是否通过审核。
+1. Keep original links as inline anchors.
+2. No emoji.
+3. No points, scores, or comment counts.
+4. Title must be `"Hacker News Daily (YYYY-MM-DD)"`.
+5. Front matter must include `editor` and `translationKey`. `translationKey` equals `$target_date`.
+6. Distinguish source claims, the digest’s reading, and HN reactions.
+7. Do not assume a developer reader; gloss jargon on first use.
+8. Follow the `Must` rules in `.pi/skills/english-writing/SKILL.md`.
+9. English should read as a native digest, not a line-by-line translation.
+
+如果发现问题，直接修改对应文件。每个语言的审核与修改最多重复 3 次。3 次后仍未通过时，保存当前版本并在最终回复中说明需要人工介入。
+
+请一次性完成所有阶段，过程中无需向用户确认。最终回复只简要说明 `$daily_file`、`$daily_file_en` 的路径和各自是否通过审核。

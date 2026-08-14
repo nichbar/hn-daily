@@ -181,6 +181,7 @@ description: 中文写作技能指南，用于生成高质量的日报、博客�
 - [ ] `title` 值必须使用双引号包裹：`"Hacker News 日报 (YYYY-MM-DD)"`
 - [ ] `tags` 格式统一（列表形式或行内形式，整站保持一致）
 - [ ] 包含 `editor`，值为本次撰写所用 LLM 模型 ID
+- [ ] 包含 `translationKey`，值等于目标日期 `YYYY-MM-DD`
 - [ ] 不输出任何内部排序字段（如 `points`）
 
 审稿时的使用方式：

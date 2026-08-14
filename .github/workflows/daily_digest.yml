@@ -48,6 +48,7 @@ jobs:
           pi --provider "$PI_PROVIDER" --model "$PI_MODEL" --thinking high --no-session \
             --prompt-template .pi/prompts/daily.md \
             --skill .pi/skills/chinese-writing \
+            --skill .pi/skills/english-writing \
             -p "/daily"
 
       - name: Commit and push changes

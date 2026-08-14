@@ -22,6 +22,7 @@ Generate the default target date, which is yesterday relative to the current UTC
 pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \
   --prompt-template .pi/prompts/daily.md \
   --skill .pi/skills/chinese-writing \
+  --skill .pi/skills/english-writing \
   -p "/daily"
 ```
 
@@ -31,6 +32,7 @@ Generate a specific date:
 pi --provider anthropic --model claude-sonnet-4-5 --thinking high --no-session \
   --prompt-template .pi/prompts/daily.md \
   --skill .pi/skills/chinese-writing \
+  --skill .pi/skills/english-writing \
   -p "/daily 2026-04-22"
 ```
 

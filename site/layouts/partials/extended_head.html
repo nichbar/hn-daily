@@ -1,0 +1,57 @@
+{{ range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}">
+{{ if eq .Language.Lang "zh" }}
+<link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+{{ end }}
+{{ end }}
+{{- $pages := dict -}}
+{{- range .AllTranslations -}}
+  {{- $pages = merge $pages (dict .Language.Lang .RelPermalink) -}}
+{{- end -}}
+{{- $data := dict "current" .Site.Language.Lang "isHome" .IsHome "pages" $pages -}}
+<script type="application/json" id="hn-i18n">{{ $data | jsonify | safeJS }}</script>
+<script>
+(function () {
+  var KEY = "hn-daily-lang";
+  var node = document.getElementById("hn-i18n");
+  if (!node) return;
+  var data;
+  try { data = JSON.parse(node.textContent); } catch (e) { return; }
+  var current = data.current;
+  var pages = data.pages || {};
+  var stored = null;
+  try { stored = localStorage.getItem(KEY); } catch (e) {}
+
+  function detect() {
+    var langs = navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || navigator.userLanguage || ""];
+    for (var i = 0; i < langs.length; i++) {
+      var code = String(langs[i] || "").toLowerCase().split("-")[0];
+      if (code === "zh" || code === "en") return code;
+    }
+    return "zh";
+  }
+
+  function go(lang) {
+    if (!lang || lang === current || !pages[lang]) return;
+    location.replace(pages[lang]);
+  }
+
+  if (stored === "zh" || stored === "en") {
+    go(stored);
+    return;
+  }
+
+  if (current === "en") {
+    try { localStorage.setItem(KEY, "en"); } catch (e) {}
+    return;
+  }
+
+  if (!data.isHome) return;
+
+  var preferred = detect();
+  try { localStorage.setItem(KEY, preferred); } catch (e) {}
+  go(preferred);
+})();
+</script>

@@ -22,6 +22,7 @@ description: 创建日报
 - `$draft_dir`：`drafts/$target_date`
 - `$draft_yaml`：`drafts/$target_date/drafts.yaml`
 - `$daily_file`：`daily/$year/$month/$target_date.md`
+- `$daily_file_en`：`daily/$year/$month/$target_date.en.md`
 
 ## 进度管理（产物即状态）
 
@@ -31,7 +32,7 @@ description: 创建日报
 | ------- | --------------------------------------------- | ---------------------------- |
 | Phase 1 | `$draft_dir/` 目录存在且包含至少一个 `.md` 文件 | 跳过 Phase 1，进入 Phase 2   |
 | Phase 2 | `$draft_yaml` 文件存在                        | 跳过 Phase 1-2，进入 Phase 3 |
-| Phase 3 | `$daily_file` 文件存在                        | 跳过 Phase 1-3，进入 Phase 4 |
+| Phase 3 | `$daily_file` 与 `$daily_file_en` 都存在      | 跳过 Phase 1-3，进入 Phase 4 |
 
 ## 工作流程
 
@@ -71,29 +72,48 @@ prompt: |
 
 ### 3. 撰写内容 (Phase 3)
 
-使用 `Task` 工具调用 `writer` 子任务：
+先写中文版，再写英文版。两篇都基于同一份 `$draft_yaml`，故事集合、排序和主题分组必须一致。英文版按 `english-writing` 技能用英文重写，不要逐句翻译中文稿。
+
+使用 `Task` 工具调用 `writer` 子任务撰写中文版：
 
 ```yaml
 prompt: |
   目标日期：$target_date
   输入文件：$draft_yaml
   输出文件：$daily_file
+  语言：zh
 
-  请基于该 YAML 撰写主题化日报，面向好奇的广义读者，不要默认读者是开发者。
+  请基于该 YAML 撰写中文主题化日报，面向好奇的广义读者，不要默认读者是开发者。
+  Front matter 必须包含 translationKey，值等于 $target_date。
   如目录不存在请创建，并写入指定输出文件。
 ```
 
-**产出**：最终的 Markdown 日报文件 `$daily_file`
+再使用 `Task` 工具调用 `writer` 子任务撰写英文版：
+
+```yaml
+prompt: |
+  目标日期：$target_date
+  输入文件：$draft_yaml
+  输出文件：$daily_file_en
+  语言：en
+
+  Write the English edition from the same YAML. Use the english-writing skill.
+  Keep the same stories, order, and topic grouping as the Chinese edition.
+  Front matter must include translationKey equal to $target_date.
+  Create the directory if needed and write the specified output file.
+```
+
+**产出**：`$daily_file`（中文）和 `$daily_file_en`（英文）
 
 ### 4. 审核与修订 (Phase 4)
 
-使用 `Task` 工具调用 `reviewer` 子任务，并传入 `$daily_file` 作为待审稿件：
+分别审核 `$daily_file` 和 `$daily_file_en`。中文版按 `chinese-writing` 审核，英文版按 `english-writing` 审核。
 
 **循环逻辑**：
 
-- 如果 Reviewer 返回 "PASS"，则任务完成。
-- 如果 Reviewer 返回修改意见，使用 `Task` 调用 `writer` 子任务在 `$daily_file` 上进行修改。
-- 修改完成后，再次使用 `Task` 调用 `reviewer` 子任务对同一文件复核。
-- 此过程最多重复 3 次。如果 3 次后仍未通过，请保存当前版本并提示用户人工介入。
+- 对每个语言文件，如果 Reviewer 返回 "PASS"，该语言完成。
+- 如果 Reviewer 返回修改意见，使用 `Task` 调用 `writer` 在对应文件上修改，并再次复核。
+- 每个语言最多重复 3 次。如果 3 次后仍未通过，请保存当前版本并提示用户人工介入。
+- 两个语言都通过（或达到重试上限）后，任务才结束。
 
-请务必一次性完成所有任务，过程中无需向我确认，向我呈现最终的日报内容。
+请务必一次性完成所有任务，过程中无需向我确认。最终同时呈现中文版和英文版路径。
