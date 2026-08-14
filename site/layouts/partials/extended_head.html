@@ -13,6 +13,7 @@
 <script>
 (function () {
   var KEY = "hn-daily-lang";
+  var SOURCE_KEY = "hn-daily-lang-source";
   var node = document.getElementById("hn-i18n");
   if (!node) return;
   var data;
@@ -20,7 +21,11 @@
   var current = data.current;
   var pages = data.pages || {};
   var stored = null;
-  try { stored = localStorage.getItem(KEY); } catch (e) {}
+  var source = null;
+  try {
+    stored = localStorage.getItem(KEY);
+    source = localStorage.getItem(SOURCE_KEY);
+  } catch (e) {}
 
   function detect() {
     var langs = navigator.languages && navigator.languages.length
@@ -38,20 +43,19 @@
     location.replace(pages[lang]);
   }
 
-  if (stored === "zh" || stored === "en") {
+  if (source === "manual" && (stored === "zh" || stored === "en")) {
     go(stored);
     return;
   }
 
-  if (current === "en") {
-    try { localStorage.setItem(KEY, "en"); } catch (e) {}
-    return;
-  }
-
   if (!data.isHome) return;
+  if (source === "manual") return;
 
   var preferred = detect();
-  try { localStorage.setItem(KEY, preferred); } catch (e) {}
+  try {
+    localStorage.setItem(KEY, preferred);
+    localStorage.setItem(SOURCE_KEY, "auto");
+  } catch (e) {}
   go(preferred);
 })();
 </script>
