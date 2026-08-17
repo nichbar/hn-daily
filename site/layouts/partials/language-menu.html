@@ -10,7 +10,7 @@
             {{ $link = .RelPermalink }}
           {{ end }}
         {{ end }}
-        <li><a href="{{ $link }}" data-set-lang="{{ $lang }}">{{ .Language.LanguageName }}</a></li>
+        <li><a href="{{ $link }}" data-set-lang="{{ $lang }}" onclick="window.__setLang && window.__setLang('{{ $lang }}')">{{ .Language.LanguageName }}</a></li>
       {{ end }}
     </ul>
   </li>

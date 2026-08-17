@@ -1,12 +1,15 @@
 <script>
 document.addEventListener("click", function (event) {
-  var link = event.target.closest("[data-set-lang]");
+  var link = event.target && event.target.closest ? event.target.closest("[data-set-lang]") : null;
   if (!link) return;
   var lang = link.getAttribute("data-set-lang");
-  if (lang !== "zh" && lang !== "en") return;
-  try {
-    localStorage.setItem("hn-daily-lang", lang);
-    localStorage.setItem("hn-daily-lang-source", "manual");
-  } catch (e) {}
-});
+  if (window.__setLang) {
+    window.__setLang(lang);
+  } else if (lang === "zh" || lang === "en") {
+    try {
+      localStorage.setItem("hn-daily-lang", lang);
+      localStorage.setItem("hn-daily-lang-source", "manual");
+    } catch (e) {}
+  }
+}, true);
 </script>

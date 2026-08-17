@@ -14,6 +14,22 @@
 (function () {
   var KEY = "hn-daily-lang";
   var SOURCE_KEY = "hn-daily-lang-source";
+
+  window.__setLang = function (lang) {
+    if (lang !== "zh" && lang !== "en") return;
+    try {
+      localStorage.setItem(KEY, lang);
+      localStorage.setItem(SOURCE_KEY, "manual");
+    } catch (e) {}
+  };
+
+  document.addEventListener("click", function (event) {
+    var link = event.target && event.target.closest ? event.target.closest("[data-set-lang]") : null;
+    if (!link) return;
+    var lang = link.getAttribute("data-set-lang");
+    window.__setLang(lang);
+  }, true);
+
   var node = document.getElementById("hn-i18n");
   if (!node) return;
   var data;
@@ -43,13 +59,14 @@
     location.replace(pages[lang]);
   }
 
+  // Priority 1: Manual selection (Highest priority)
   if (source === "manual" && (stored === "zh" || stored === "en")) {
     go(stored);
     return;
   }
 
+  // Priority 2: Auto-detect (Lower priority, homepage only, no manual choice)
   if (!data.isHome) return;
-  if (source === "manual") return;
 
   var preferred = detect();
   try {
