@@ -39,7 +39,7 @@ model: opus
   - `science` → 中文 `## 科学与研究` / 英文 `## Science and Research`
   - `society` → 中文 `## 社会与文化` / 英文 `## Society and Culture`
 - **一级标题收束**：中文版用 `# 尾巴`，英文版用 `# Closing`。
-- **禁止项**：不要使用 `# 文章梗概和评论反响` 或 `# Article summaries and comment reactions` 作为独立标题；如需概述，请放在热点末尾或分类前的 1-2 句中。
+- **禁止项**：不要使用 `# 文章梗概和评论反响` 或 `# Article summaries and comment reactions` 作为独立标题。
 
 ## 2. 内容要求
 
@@ -81,7 +81,7 @@ model: opus
    - 主题板块的出现顺序，按该板块中最高 `points` 文章的排名决定。
    - 同一板块内的条目按 `points` 从高到低排列。
 4. **确定 editor**：优先使用环境变量 `PI_MODEL`；否则从 `.github/workflows/daily_digest.yml` 读取 `PI_MODEL` 默认值。
-5. **构思大纲**：根据主题板块安排过渡句，并确保开篇能概括“今天真正值得关心的变化是什么”。
+5. **构思大纲**：确保开篇能概括“今天真正值得关心的变化是什么”。
 6. **撰写正文**：
    - 中文版参考 `chinese-writing`，英文版参考 `english-writing`。
    - 将文件中的结构化数据转化为连贯的段落。
